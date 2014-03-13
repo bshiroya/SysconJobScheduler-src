@@ -28,14 +28,29 @@ namespace Syscon.ScheduledJob
             set;
         }
 
+        /// <summary>
+        /// Reference of ScheduledJob object
+        /// </summary>
         IScheduledJob ScheduledJob { get; }
 
+        /// <summary>
+        /// Assembly name
+        /// </summary>
         string AssemblyName { get; }
 
+        /// <summary>
+        /// Assembly path
+        /// </summary>
         string AssemblyPath { get; }
 
+        /// <summary>
+        /// Load the config
+        /// </summary>
         void LoadConfig();
 
+        /// <summary>
+        /// Save the config
+        /// </summary>
         void SaveConfig();
     }
 }

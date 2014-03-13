@@ -8,7 +8,7 @@ namespace Syscon.ScheduledJob
 {
 
     /// <summary>
-    /// 
+    /// Enum for depicting the job status.
     /// </summary>
     [DataContract(Name = "JobStatus")]
     public enum JobStatus

@@ -13,22 +13,17 @@ namespace Syscon.ScheduledJob
     /// <summary>
     /// Interface definition for scheduled job.
     /// </summary>
-    [ServiceContract(Namespace="Syscon.ScheduledJob", 
-        Name="ScheduledJob",
-        ProtectionLevel=ProtectionLevel.EncryptAndSign)]
     public interface IScheduledJob
     {
         /// <summary>
         /// Execute the instructions for this job.
         /// </summary>
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
-        [OperationContract]
         void ExceuteJob();
 
         /// <summary>
         /// Set the configuration settings for this job.
         /// </summary>
-        [OperationContract]
         void SetJobConfiguration();
 
         /// <summary>
@@ -42,7 +37,6 @@ namespace Syscon.ScheduledJob
         /// </summary>
         Guid JobId 
         {
-            [OperationContract]
             get; 
         }
 
@@ -51,7 +45,6 @@ namespace Syscon.ScheduledJob
         /// </summary>
         string JobDesc 
         {
-            [OperationContract]
             get;  
         }
 
@@ -60,9 +53,7 @@ namespace Syscon.ScheduledJob
         /// </summary>
         JobStatus JobStatus
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set; 
         }
 
@@ -71,7 +62,6 @@ namespace Syscon.ScheduledJob
         /// </summary>
         string ConfigFilePath
         {
-            [OperationContract]
             get;
         }
 
@@ -80,7 +70,6 @@ namespace Syscon.ScheduledJob
         /// </summary>
         string LogFilePath
         {
-            [OperationContract]
             get;
         }
 
@@ -89,9 +78,7 @@ namespace Syscon.ScheduledJob
         /// </summary>
         bool Enqueued
         {
-            [OperationContract]
             get;
-            [OperationContract]
             set;
         }
 

@@ -27,7 +27,7 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// 
+        /// Ctor
         /// </summary>
         public ScheduledJobConfig(IScheduledJob scheduledJob)
         {
@@ -45,7 +45,7 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// 
+        /// SMB Directory
         /// </summary>
         [XmlElement(ElementName = "SMBDir")]
         public virtual string SMBDir
@@ -55,7 +55,7 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// 
+        /// The time scheduled to run this job.
         /// </summary>
         [XmlElement(ElementName="ScheduledTime")]
         public DateTime ScheduledTime
@@ -98,7 +98,7 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// 
+        /// Save the config.
         /// </summary>
         public virtual void SaveConfig()
         {
@@ -123,7 +123,7 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// 
+        /// Load the config.
         /// </summary>
         public virtual void LoadConfig()
         {
@@ -154,9 +154,6 @@ namespace Syscon.ScheduledJob
         }
 
         #endregion
-
-
-
-       
+               
     }
 }
