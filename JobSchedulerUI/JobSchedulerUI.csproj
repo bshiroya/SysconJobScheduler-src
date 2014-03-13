@@ -39,20 +39,14 @@
       <HintPath>..\..\..\References\nunit.framework.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
-    <Reference Include="PLUSManaged">
-      <HintPath>..\..\..\References\PLUSManaged.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="PLUSManaged, Version=1.10.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Assemblies\PLUSManaged.dll</HintPath>
     </Reference>
-    <Reference Include="StringTemplate">
-      <HintPath>..\..\..\References\StringTemplate.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="StringTemplate, Version=3.0.1.6846, Culture=neutral, PublicKeyToken=beee492b52c41e85, processorArchitecture=MSIL">
+      <HintPath>..\Assemblies\StringTemplate.dll</HintPath>
     </Reference>
-    <Reference Include="SysconCommon">
-      <HintPath>..\..\..\References\SysconCommon.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="SysconCommon, Version=1.3.1.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\Assemblies\SysconCommon.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
