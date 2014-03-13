@@ -117,18 +117,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4A8E30F87B74A090DA4D57BD56660215"
-        "OwnerKey" = "8:_0FFF610AF0C4562389CD255FFABB817B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4A8E30F87B74A090DA4D57BD56660215"
-        "OwnerKey" = "8:_614AEDB8DD5DD910FC8600AAD4EF49EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_4FE654A47FA538E688CC4668CCE2E7E0"
         "OwnerKey" = "8:_AAA73269FE5C4E13AFED38C5BAFB6FFE"
         "MsmSig" = "8:_UNDEFINED"
@@ -208,6 +196,12 @@
         "Entry"
         {
         "MsmKey" = "8:_AAA73269FE5C4E13AFED38C5BAFB6FFE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AAED3683EFC946C0B75F00DBAFFE72D5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -604,26 +598,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4A8E30F87B74A090DA4D57BD56660215"
-            {
-            "SourcePath" = "8:SysconCommon.tlb"
-            "TargetName" = "8:SysconCommon.tlb"
-            "Tag" = "8:"
-            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:2"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4FE654A47FA538E688CC4668CCE2E7E0"
             {
             "AssemblyRegister" = "3:1"
@@ -768,6 +742,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AAED3683EFC946C0B75F00DBAFFE72D5"
+            {
+            "SourcePath" = "8:..\\JobSchedulerUI\\syscon.ico"
+            "TargetName" = "8:syscon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D7D79A7B4257BD6E0E21D0B720B99865"
             {
             "AssemblyRegister" = "3:1"
@@ -896,9 +890,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:JobSchedulerSetup"
+        "ProductName" = "8:Job Scheduler"
         "ProductCode" = "8:{2A56CD15-3163-44AE-BEC8-36776E3E7688}"
-        "PackageCode" = "8:{9DBB1570-0A72-42F3-813C-4EB2A79AFD40}"
+        "PackageCode" = "8:{8804B2DA-48CB-479A-934C-85F9D85E8DB8}"
         "UpgradeCode" = "8:{42D47909-4F20-4E6E-9C98-085336C87661}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -909,13 +903,13 @@
         "Manufacturer" = "8:Syscon"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:JobSchedulerSetup"
+        "Title" = "8:Job Scheduler Setup"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Syscon"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:http://www.syscon-inc.com/"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_AAED3683EFC946C0B75F00DBAFFE72D5"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
