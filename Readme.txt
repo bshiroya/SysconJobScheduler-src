@@ -19,4 +19,4 @@ Install Instructions
 ---------------------------------------------------------
 
 After installation, run the ServiceInstall.bat file to install and start the service.
-For successfully running the ServiceInstall.bat the user might should have admin privilege.
+For successfully running the ServiceInstall.bat the user should have admin privilege.
