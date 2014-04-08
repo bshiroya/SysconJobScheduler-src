@@ -22,7 +22,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
     /// Implementation of the work order import job.
     /// </summary>
     [Export(typeof(IScheduledJob))]    
-    [DataContract]
     public class WorkOrderImportJob : IScheduledJob
     {
         #region Member variables
@@ -52,7 +51,10 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
         public void ExceuteJob()
         {
-            this.Log("Started execution of work order import job. Start time: {0}", DateTime.Now.ToString());
+            this.Log("Started execution of work order import job.");
+
+            _jobConfig.LoadConfig();
+            SysconCommon.Common.Environment.Connections.SetOLEDBFreeTableDirectory(_jobConfig.SMBDir);
 
             string      currentFilePath = _jobConfig.WorkOrderQueueDirectory;
             string[]    files           = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
@@ -69,17 +71,19 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                 {
                     DataTable dt = CSV.ParseFile(fileName);
 
-                    string iXMLdoc = CreateWorkOrderXml(dt);
-                    string iXMLOut;
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        string iXMLdoc = CreateWorkOrderXml(dr);
+                        string iXMLOut;
 
-                    // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
-                    iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
+                        // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
+                        iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
 
-                    //Process the response Xml
+                        //Process the response Xml
 
-
+                    }
                     //If file is successfully processed then move it into a child archive folder so that it is not processed again
-                    string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed");
+                    string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed Files");
                     if (!Directory.Exists(archivePath))
                     {
                         Directory.CreateDirectory(archivePath);
@@ -94,17 +98,9 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             }
 
             //Log end of execution, time etc.
-            this.Log("Started execution of work order import job. Start time: {0}", DateTime.Now.ToString());
+            this.Log("Finished execution of work order import job. Start time: {0}", DateTime.Now.ToString());
         }
-
-        private string CreateWorkOrderXml(DataTable dt)
-        {
-            string outXml = string.Empty;
-
-            //TODO: Read the WorkOrderAddRq.xml and fill the relevant data
-
-            return outXml;
-        }
+                
 
         /// <summary>
         /// Set the configuration settings for the job.
@@ -130,7 +126,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         /// <summary>
         /// The time scheduled to run this job.
         /// </summary>
-        [DataMember]
         public DateTime ScheduledTime
         {
             get { return _scheduledTime; }
@@ -217,6 +212,15 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             {
                 Env.Log("Error writing work order import job log file");
             }
+        }
+
+        private string CreateWorkOrderXml(DataRow dr)
+        {
+            string outXml = string.Empty;
+
+            //TODO: Read the WorkOrderAddRq.xml and fill the relevant data
+
+            return outXml;
         }
 
         #endregion

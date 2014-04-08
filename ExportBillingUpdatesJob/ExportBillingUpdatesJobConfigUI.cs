@@ -10,16 +10,16 @@ using Syscon.ScheduledJob;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Syscon.ScheduledJob.WorkOrderImportJob
+namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 {
     /// <summary>
     /// 
     /// </summary>
-    public partial class WorkOrderImportJobConfigUI : Form
+    public partial class ExportBillingUpdatesJobConfigUI : Form
     {
         #region Member variables
         private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
-        private WorkOrderImportJobConfig _jobConfig = null;
+        private ExportBillingUpdatesJobConfig _jobConfig = null;
         private XmlSerializer _xmlSerializer = null;
         #endregion
 
@@ -27,10 +27,12 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         /// Ctor
         /// </summary>
         /// <param name="job"></param>
-        public WorkOrderImportJobConfigUI(IScheduledJob job)
+        public ExportBillingUpdatesJobConfigUI(IScheduledJob job)
         {
             InitializeComponent();
-            _jobConfig = new WorkOrderImportJobConfig(job);
+            _jobConfig = new ExportBillingUpdatesJobConfig(job);
+
+            LoadConfig();
         }
 
         #region Event Handlers
@@ -45,13 +47,14 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             txtUserName.Text    = _jobConfig.UserId;
             txtPwd.Text         = _jobConfig.Password;
             txtVerifyPwd.Text   = _jobConfig.Password;
-            txtWOImportDir.Text = _jobConfig.WorkOrderQueueDirectory;
+            txtBillUpdatesExportDir.Text = _jobConfig.BillingUpdateQueueDirectory;
+
             //scheduleTimePicker.Text = _jobConfig.ScheduledTime.ToString();
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtWOImportDir.Text))
+            if (string.IsNullOrEmpty(txtBillUpdatesExportDir.Text))
             {
                 MessageBox.Show("Please select the work order import file (.csv) path.", "Select work order file path", MessageBoxButtons.OK);
                 return;
@@ -71,7 +74,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             _jobConfig.UserId = txtUserName.Text;
             _jobConfig.Password = txtPwd.Text; //encrypt this before saving
             _jobConfig.LogFilePath = txtLogFilePath.Text;
-            _jobConfig.WorkOrderQueueDirectory = txtWOImportDir.Text;
+            _jobConfig.BillingUpdateQueueDirectory = txtBillUpdatesExportDir.Text;
             _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
 
             //Save the config
@@ -84,6 +87,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             this.Close();
         }
         #endregion
+
 
         /// <summary>
         /// Save the config
@@ -125,13 +129,13 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                     using (FileStream stream = new FileInfo(configFile).OpenRead())
                     {
                         var dsObj = _xmlSerializer.Deserialize(stream);
-                        WorkOrderImportJobConfig tempConfig = dsObj as WorkOrderImportJobConfig;
+                        ExportBillingUpdatesJobConfig tempConfig = dsObj as ExportBillingUpdatesJobConfig;
 
                         _jobConfig.SMBDir = tempConfig.SMBDir;
                         _jobConfig.UserId = tempConfig.UserId;
                         _jobConfig.Password = tempConfig.Password; //decrypt this
                         _jobConfig.LogFilePath = tempConfig.LogFilePath;
-                        _jobConfig.WorkOrderQueueDirectory = tempConfig.WorkOrderQueueDirectory;
+                        _jobConfig.BillingUpdateQueueDirectory = tempConfig.BillingUpdateQueueDirectory;
                     }
                 }
             }
@@ -157,7 +161,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         {
             if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                txtWOImportDir.Text = folderBrowserDialog1.SelectedPath;
+                txtBillUpdatesExportDir.Text = folderBrowserDialog1.SelectedPath;
             }
         }
 

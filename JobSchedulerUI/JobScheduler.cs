@@ -151,17 +151,6 @@ namespace Syscon.JobSchedulerUI
             }
 
             txtDataDir.Text = mbapi.smartGetSMBDir();
-
-            ////TEMP Code - Just for testing how to get data from lgrtrn table
-            //using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
-            //{
-            //    using (var jobtyps = con.GetTempDBF())
-            //    {
-            //        int count = con.GetScalar<int>("select count(*) from lgrtrn");
-            //        //Log the result
-            //        //Env.Log()
-            //    }
-            //}
         }
 
         private void txtDataDir_TextChanged(object sender, EventArgs e)
@@ -241,6 +230,8 @@ namespace Syscon.JobSchedulerUI
                     job.Enqueued = false;
                 }
 
+                job.JobConfig.LoadConfig();
+
                 ScheduledJobModel jobModel = new ScheduledJobModel(job);
                 jobListBindingSrc.Add(jobModel);
             }
@@ -299,7 +290,7 @@ namespace Syscon.JobSchedulerUI
 
                 if (scheduledJobModel.Enqueued)
                 {
-                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.ScheduledTime.ToShortTimeString());
+                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.JobConfig.ScheduledTime.ToShortTimeString());
                 }
                 else
                 {

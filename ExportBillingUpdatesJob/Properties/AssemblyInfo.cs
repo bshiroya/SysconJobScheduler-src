@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WorkOrderImportJob")]
+[assembly: AssemblyTitle("ExportBillingUpdatesJob")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WorkOrderImportJob.PlugIn")]
+[assembly: AssemblyProduct("ExportBillingUpdatesJob.PlugIn")]
 [assembly: AssemblyCopyright("Copyright ©  2014 Syscon, Inc")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d0fc6dfb-50e7-452d-be67-c6c76c35d774")]
+[assembly: Guid("41e8a646-af61-4c64-804f-e24c43e71dd5")]
 
 // Version information for an assembly consists of the following four values:
 //

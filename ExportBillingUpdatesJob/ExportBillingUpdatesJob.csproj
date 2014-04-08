@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4648C2D1-848F-4585-9C88-1F9071FD36E6}</ProjectGuid>
+    <ProjectGuid>{A42981B6-657E-41C6-A439-C632CA38E299}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Syscon.ScheduledJob.SimpleLogJob</RootNamespace>
-    <AssemblyName>SimpleLogJob.PlugIn</AssemblyName>
+    <RootNamespace>Syscon.ScheduledJob.ExportBillingUpdatesJob</RootNamespace>
+    <AssemblyName>ExportBillingUpdatesJob.PlugIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,6 +38,10 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\Assemblies\System.Data.SQLite.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -48,14 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SimpleLogJob.cs" />
+    <Compile Include="ExportBillingUpdatesJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleLogJobConfig.cs" />
-    <Compile Include="SimpleLogJobConfigUI.cs">
+    <Compile Include="ExportBillingUpdatesJobConfig.cs" />
+    <Compile Include="ExportBillingUpdatesJobConfigUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SimpleLogJobConfigUI.Designer.cs">
-      <DependentUpon>SimpleLogJobConfigUI.cs</DependentUpon>
+    <Compile Include="ExportBillingUpdatesJobConfigUI.Designer.cs">
+      <DependentUpon>ExportBillingUpdatesJobConfigUI.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -66,8 +70,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="SimpleLogJobConfigUI.resx">
-      <DependentUpon>SimpleLogJobConfigUI.cs</DependentUpon>
+    <EmbeddedResource Include="ExportBillingUpdatesJobConfigUI.resx">
+      <DependentUpon>ExportBillingUpdatesJobConfigUI.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,41 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Xml.Serialization;
 
 using Syscon.ScheduledJob;
-using System.Xml.Serialization;
-using System.Reflection;
 
-
-namespace Syscon.ScheduledJob.WorkOrderImportJob
+namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 {
     /// <summary>
     /// Job configuration settings for the Log job
     /// </summary>
-    public class WorkOrderImportJobConfig : ScheduledJobConfig
+    public class ExportBillingUpdatesJobConfig : ScheduledJobConfig
     {
-        private WorkOrderImportJob _workOrderImportJob = null;
+        private ExportBillingUpdatesJob _exportBillingUpdatesJob = null;        
 
         /// <summary>
         /// Default Ctor
         /// </summary>
-        public WorkOrderImportJobConfig()
+        public ExportBillingUpdatesJobConfig()
             :base()
         {
         }
 
         /// <summary>
-        /// 
+        /// Ctor
         /// </summary>
-        public WorkOrderImportJobConfig(IScheduledJob scheduledJob)
+        public ExportBillingUpdatesJobConfig(IScheduledJob scheduledJob)
             :base(scheduledJob)
         {
-            _workOrderImportJob = scheduledJob as WorkOrderImportJob;
+            _exportBillingUpdatesJob = scheduledJob as ExportBillingUpdatesJob;
         }
 
-        /// <summary>
+                /// <summary>
         /// Load the config.
         /// </summary>
         public override void LoadConfig()
@@ -51,13 +50,13 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                     using (FileStream stream = new FileInfo(configFile).OpenRead())
                     {
                         var dsObj = _xmlSerializer.Deserialize(stream);
-                        WorkOrderImportJobConfig config = dsObj as WorkOrderImportJobConfig;
-                        SMBDir                  = config.SMBDir;
-                        ScheduledTime           = config.ScheduledTime;
-                        LogFilePath             = config.LogFilePath;
-                        WorkOrderQueueDirectory = config.WorkOrderQueueDirectory;
-                        UserId                  = config.UserId;
-                        Password                = config.Password;
+                        ExportBillingUpdatesJobConfig config = dsObj as ExportBillingUpdatesJobConfig;
+                        SMBDir                      = config.SMBDir;
+                        ScheduledTime               = config.ScheduledTime;
+                        LogFilePath                 = config.LogFilePath;
+                        BillingUpdateQueueDirectory = config.BillingUpdateQueueDirectory;
+                        UserId                      = config.UserId;
+                        Password                    = config.Password;
                     }
                 }
             }
@@ -72,7 +71,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         }
 
         /// <summary>
-        /// User Id
+        /// User Id.
         /// </summary>
         [XmlElement("UserId")]
         public string UserId
@@ -82,7 +81,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         }
 
         /// <summary>
-        /// User Password
+        /// User password
         /// </summary>
         [XmlElement("Password")]
         public string Password
@@ -92,10 +91,10 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         }
 
         /// <summary>
-        /// Work Order Import File Directory 
+        /// Billing Update Export File Directory 
         /// </summary>
-        [XmlElement("WorkOrderQueueDir")]
-        public string WorkOrderQueueDirectory
+        [XmlElement("BillingUpdateQueueDir")]
+        public string BillingUpdateQueueDirectory
         {
             get;
             set;
@@ -104,7 +103,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         /// <summary>
         /// 
         /// </summary>
-        [XmlElement("LogFile")]
+        [XmlElement("LogFilePath")]
         public string LogFilePath
         {
             get;
