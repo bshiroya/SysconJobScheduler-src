@@ -105,7 +105,7 @@ namespace Syscon.JobSchedulerUI
             Env.SetConfigVar("product_id", 178507);
 
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = "1.0.0.0";
+            var product_version = "1.1.0.0";
             bool require_login = false;
 
             if (!loaded)
@@ -255,7 +255,7 @@ namespace Syscon.JobSchedulerUI
                 if (scheduledJobModel.Enqueued)
                 {
                     config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());
-                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.ScheduledTime.ToShortTimeString());
+                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.JobConfig.ScheduledTime.ToShortTimeString());
                 }
                 else
                 {

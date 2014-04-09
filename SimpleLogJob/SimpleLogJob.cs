@@ -78,7 +78,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                 //Possibly put the logic inside this ConfigUI itself.
                 //_jobConfig.SaveConfig();
 
-                this.ScheduledTime = _jobConfig.ScheduledTime;
+                _jobConfig.LoadConfig();
             }
         }
 
