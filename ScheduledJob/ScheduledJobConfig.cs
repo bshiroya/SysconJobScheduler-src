@@ -67,8 +67,6 @@ namespace Syscon.ScheduledJob
             set
             {
                 _scheduledTime = value;
-                if (_scheduledJob != null)
-                    _scheduledJob.ScheduledTime = value;
             }
         }
 
@@ -95,6 +93,16 @@ namespace Syscon.ScheduledJob
                 string location = Assembly.GetAssembly(this.GetType()).Location;
                 return location.Substring(0, location.LastIndexOf('\\'));
             }
+        }
+
+        /// <summary>
+        /// Log file path
+        /// </summary>
+        [XmlElement("LogFile")]
+        public string LogFilePath
+        {
+            get;
+            set;
         }
 
         /// <summary>

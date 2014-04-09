@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
-
 using Sage.SMB.API;
+using Syscon.ScheduledJob;
+
+using SysconCommon;
 using SysconCommon.Common;
 using SysconCommon.Common.Environment;
 using SysconCommon.Parsing;
-
-using Syscon.ScheduledJob;
-using System.Data;
 
 namespace Syscon.ScheduledJob.WorkOrderImportJob
 {
@@ -31,7 +31,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
 
         // Create instance of sage API
         private IMBXML _iXML = null;
-
+        COMMethods _methods = null;
         #endregion
 
         /// <summary>
@@ -43,6 +43,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             _configUI = new WorkOrderImportJobConfigUI(this);
 
             _iXML = new IMBXML();
+            _methods = new COMMethods();
         }
 
         /// <summary>
@@ -54,51 +55,84 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             this.Log("Started execution of work order import job.");
 
             _jobConfig.LoadConfig();
+
             SysconCommon.Common.Environment.Connections.SetOLEDBFreeTableDirectory(_jobConfig.SMBDir);
 
-            string      currentFilePath = _jobConfig.WorkOrderQueueDirectory;
-            string[]    files           = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
-
-            foreach (string fileName in files)
+            using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
-                //Read all .csv files one by one, create the xml and send to Sage 100 using the Sage APIs
-                string fileNameWithoutPath = fileName.Substring(fileName.LastIndexOf('\\') + 1);
+                var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
 
-                //Log the filename in the log file
-                this.Log("Processing file - {0}", fileNameWithoutPath);
-
-                try
+                //Login to the SMB Dir
+                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId, hashed_password);
+                if (login_result == 0)
                 {
-                    DataTable dt = CSV.ParseFile(fileName);
-
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        string iXMLdoc = CreateWorkOrderXml(dr);
-                        string iXMLOut;
-
-                        // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
-                        iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
-
-                        //Process the response Xml
-
-                    }
-                    //If file is successfully processed then move it into a child archive folder so that it is not processed again
-                    string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed Files");
-                    if (!Directory.Exists(archivePath))
-                    {
-                        Directory.CreateDirectory(archivePath);
-                    }
-                    File.Move(fileName, archivePath + fileNameWithoutPath);
-                    Log("The file - {0} has been imported successfully.", DateTime.Now.ToString(), fileNameWithoutPath);
+                    this.Log("Login failure - Invalid user name or password. Exiting job...");
+                    return;
                 }
-                catch (Exception ex)
-                { 
 
+                string currentFilePath = _jobConfig.WorkOrderQueueDirectory;
+                string[] files = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
+
+                foreach (string fileName in files)
+                {
+                    //Read all .csv files one by one, create the xml and send to Sage 100 using the Sage APIs
+                    string fileNameWithoutPath = fileName.Substring(fileName.LastIndexOf('\\') + 1);
+
+                    //Log the filename in the log file
+                    this.Log("Processing file - {0}", fileNameWithoutPath);
+
+                    try
+                    {
+                        DataTable dt = SysconCommon.Algebras.DataTables.DatatableExtensions.DataTableFromCSV("WorkOrders", fileName, true);
+
+                        foreach (DataRow dr in dt.Rows)
+                        {
+                            //i.	Determine if the work order already exists based on the OrderNumber 
+
+                            var result = con.GetScalar<int>("select count(*) from srvinv where ordnum='{0}", dr["OrderNumber"]);
+                            if (result == 0)
+                            {
+                                //Order number does not exits, create it.
+                                string orderNum = (string)dr["OrderNumber"];
+                                string clientRef = (string)dr["ClientRef"];
+                                string desc = (string)dr["Desc"];
+                                //1. If the following fields do not exist in the csv file then skip this entry.
+                                if (string.IsNullOrEmpty(orderNum) || string.IsNullOrEmpty(clientRef) || string.IsNullOrEmpty(desc))
+                                {
+                                    this.Log("Invalid record in file - {0}. OrderNumber = {1}, ClientRef = {2}, Desc = {3}",
+                                                        fileNameWithoutPath, orderNum, clientRef, desc);
+                                    continue;
+                                }
+
+                                string iXMLdoc = CreateWorkOrderXml(dr);
+                                string iXMLOut;
+
+                                // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
+                                iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
+
+                                //Process the response Xml
+                            }
+                            else
+                            {
+                                //Order number exists. Update it.
+                            }
+                        }
+
+                        this.Log("The file - {0} has been imported successfully.", fileNameWithoutPath);
+
+                        //If file is successfully processed then move it into a child archive folder so that it is not processed again
+                        this.MoveFileToProcessedFolder(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Log("Exception in work order import job while processing file - {0}.\nException Message - {1} \nStack trace - {2}", 
+                                            fileNameWithoutPath, ex.Message, ex.StackTrace);
+                    }
                 }
             }
 
             //Log end of execution, time etc.
-            this.Log("Finished execution of work order import job. Start time: {0}", DateTime.Now.ToString());
+            this.Log("Finished execution of work order import job.");
         }
                 
 
@@ -109,7 +143,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         {
             if (_configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.ScheduledTime = _jobConfig.ScheduledTime;
+                _jobConfig.LoadConfig();
             }
         }
 
@@ -221,6 +255,19 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             //TODO: Read the WorkOrderAddRq.xml and fill the relevant data
 
             return outXml;
+        }
+
+        private void MoveFileToProcessedFolder(string fileName)
+        {
+            string fileNameWithoutPath = Path.GetFileName(fileName);
+
+            string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed Files");
+            if (!Directory.Exists(archivePath))
+            {
+                Directory.CreateDirectory(archivePath);
+            }
+            File.Move(fileName, archivePath + fileNameWithoutPath);
+            this.Log("The file - {0} moved to processed folder after successful import.", fileNameWithoutPath);
         }
 
         #endregion

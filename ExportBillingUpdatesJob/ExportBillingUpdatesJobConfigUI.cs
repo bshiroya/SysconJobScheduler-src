@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Syscon.ScheduledJob;
 using System.Xml.Serialization;
-using System.IO;
+
+using SysconCommon;
+using Syscon.ScheduledJob;
 
 namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 {
@@ -21,6 +23,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
         private ExportBillingUpdatesJobConfig _jobConfig = null;
         private XmlSerializer _xmlSerializer = null;
+        //COMMethods _methods;
         #endregion
 
         /// <summary>
@@ -31,7 +34,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         {
             InitializeComponent();
             _jobConfig = new ExportBillingUpdatesJobConfig(job);
-
+            //_methods = new COMMethods();
             LoadConfig();
         }
 
@@ -72,18 +75,20 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 
             _jobConfig.SMBDir = txtSageDir.Text;
             _jobConfig.UserId = txtUserName.Text;
-            _jobConfig.Password = txtPwd.Text; //encrypt this before saving
+            _jobConfig.Password = txtPwd.Text;// _methods.smartEncrypt(txtPwd.Text, false); //encrypt this before saving
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.BillingUpdateQueueDirectory = txtBillUpdatesExportDir.Text;
             _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
 
             //Save the config
             SaveConfig();
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
+            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
         }
         #endregion

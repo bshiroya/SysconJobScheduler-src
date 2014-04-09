@@ -31,7 +31,6 @@ namespace Syscon.JobSchedulerUI
         }
 
 
-        private string _desc;
         /// <summary>
         /// Description of the Job
         /// </summary>
@@ -54,7 +53,6 @@ namespace Syscon.JobSchedulerUI
             }
         }
        
-        private string _logFile;
         /// <summary>
         /// Log file for the Job
         /// </summary>
@@ -62,11 +60,7 @@ namespace Syscon.JobSchedulerUI
         {
             get
             {
-                return _logFile;
-            }
-            set
-            {
-                _logFile = value;
+                return _job.JobConfig.LogFilePath;
             }
         }
 

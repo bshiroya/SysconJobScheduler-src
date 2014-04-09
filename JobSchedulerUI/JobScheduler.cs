@@ -95,7 +95,7 @@ namespace Syscon.JobSchedulerUI
             }
             catch (CompositionException ex)
             {
-
+                Env.Log("Exception in loading job plug-ins in JobSchedulerUI" + ex.Message);
             }
         }
         
@@ -213,10 +213,10 @@ namespace Syscon.JobSchedulerUI
             enueueCol.Name = "Enqueue";
             jobsDataGridView.Columns.Add(enueueCol);
 
-            DataGridViewLinkColumn column6 = new DataGridViewLinkColumn();
+            DataGridViewTextBoxColumn column6 = new DataGridViewTextBoxColumn();
             column6.DataPropertyName = "LogFile";
-            column6.Name = "Log";
-            column6.UseColumnTextForLinkValue = true;
+            column6.Name = "LogFile";
+            column6.ReadOnly = true;
             jobsDataGridView.Columns.Add(column6);
 
             foreach (IScheduledJob job in _scheduledJobs)
@@ -254,7 +254,7 @@ namespace Syscon.JobSchedulerUI
                 Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(string.Format(@"{0}\JobSchedulerService.exe", exeLocation));
                 if (scheduledJobModel.Enqueued)
                 {
-                    config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());//, scheduledJobModel.Job.ScheduledTime.ToShortTimeString());
+                    config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());
                     config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.ScheduledTime.ToShortTimeString());
                 }
                 else
@@ -263,9 +263,9 @@ namespace Syscon.JobSchedulerUI
                 }
                 config.Save(ConfigurationSaveMode.Modified);
             }
-            if (e.ColumnIndex == jobsDataGridView.Columns["Log"].Index && e.RowIndex >= 0)
+            if (e.ColumnIndex == jobsDataGridView.Columns["LogFile"].Index && e.RowIndex >= 0)
             {
-                string filepath = (string)jobsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                string filepath = scheduledJobModel.Job.LogFilePath;//(string)jobsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
                 if (File.Exists(filepath))
                 {
                     System.Diagnostics.Process.Start(filepath);

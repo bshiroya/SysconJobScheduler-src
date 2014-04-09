@@ -99,15 +99,5 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
             get;
             set;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("LogFilePath")]
-        public string LogFilePath
-        {
-            get;
-            set;
-        }
     }
 }

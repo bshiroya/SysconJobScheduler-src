@@ -44,6 +44,11 @@ namespace Syscon.ScheduledJob
         string AssemblyPath { get; }
 
         /// <summary>
+        /// Log file path
+        /// </summary>
+        string LogFilePath { get; set; }
+
+        /// <summary>
         /// Load the config
         /// </summary>
         void LoadConfig();

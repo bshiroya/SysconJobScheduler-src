@@ -100,7 +100,7 @@ namespace Syscon.Services
             }
             catch (CompositionException ex)
             {
-                Env.Log("Exception in loading job plug-ins");
+                Env.Log("Exception in loading job plug-ins" + ex.Message);
             }
         }
 
@@ -217,7 +217,7 @@ namespace Syscon.Services
         /// <param name="e"></param>
         private void ServiceTimer_Tick(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Env.Log("ScheduleService Example Timer Function called");
+            Env.Log("ScheduleService timer function called");
 
             ReloadJobs();
 

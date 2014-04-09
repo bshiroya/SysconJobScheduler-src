@@ -27,7 +27,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         }
 
         /// <summary>
-        /// 
+        /// Ctor
         /// </summary>
         public WorkOrderImportJobConfig(IScheduledJob scheduledJob)
             :base(scheduledJob)
@@ -96,16 +96,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         /// </summary>
         [XmlElement("WorkOrderQueueDir")]
         public string WorkOrderQueueDirectory
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("LogFile")]
-        public string LogFilePath
         {
             get;
             set;
