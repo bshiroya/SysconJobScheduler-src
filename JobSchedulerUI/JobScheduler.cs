@@ -188,6 +188,7 @@ namespace Syscon.JobSchedulerUI
             desCol.DataPropertyName = "Desc";
             desCol.Name = "Desc";
             desCol.ReadOnly = true;
+            desCol.Width = 250;
             jobsDataGridView.Columns.Add(desCol);
 
             DataGridViewColumn statusCol = new DataGridViewTextBoxColumn();

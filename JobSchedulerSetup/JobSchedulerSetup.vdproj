@@ -237,12 +237,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_28321722B40F4BC49C04ADF0C875CDB8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_30AD05593975EEAF04DD3B39CFBBCDA6"
         "OwnerKey" = "8:_49B26A85DF2D4915A33FC97483A3DE2E"
         "MsmSig" = "8:_UNDEFINED"
@@ -341,6 +335,12 @@
         {
         "MsmKey" = "8:_59A29B0BDAB2F978A85DDDCC14117E6D"
         "OwnerKey" = "8:_49B26A85DF2D4915A33FC97483A3DE2E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6572580867FF4F91A420F5C945579A65"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -507,12 +507,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_943596C6BA1A481587A5B95C5AE2C6C4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9E805197DDC4044424B07DF0B7403A1D"
         "OwnerKey" = "8:_123D248A017D439558C70BDB3615E548"
         "MsmSig" = "8:_UNDEFINED"
@@ -615,6 +609,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D3402C7A1BCC41269337C0302D995D01"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D57130D4DBA71EB43EB698EA8F9B4EDF"
         "OwnerKey" = "8:_30AD05593975EEAF04DD3B39CFBBCDA6"
         "MsmSig" = "8:_UNDEFINED"
@@ -623,36 +623,6 @@
         {
         "MsmKey" = "8:_D57130D4DBA71EB43EB698EA8F9B4EDF"
         "OwnerKey" = "8:_49B26A85DF2D4915A33FC97483A3DE2E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
-        "OwnerKey" = "8:_49B26A85DF2D4915A33FC97483A3DE2E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
-        "OwnerKey" = "8:_B0D0C53441D142A8BF2557FFFDAAB1A9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
-        "OwnerKey" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
-        "OwnerKey" = "8:_AAA73269FE5C4E13AFED38C5BAFB6FFE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
-        "OwnerKey" = "8:_7DC9248E2E134E528B0A1217EBD09AE1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -677,6 +647,36 @@
         {
         "MsmKey" = "8:_E0218C5BE46EEB86104A11D81B7393D4"
         "OwnerKey" = "8:_6FFC6259A227AB5EF4320FF9DA90F852"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "OwnerKey" = "8:_49B26A85DF2D4915A33FC97483A3DE2E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "OwnerKey" = "8:_B0D0C53441D142A8BF2557FFFDAAB1A9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "OwnerKey" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "OwnerKey" = "8:_AAA73269FE5C4E13AFED38C5BAFB6FFE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "OwnerKey" = "8:_7DC9248E2E134E528B0A1217EBD09AE1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -766,6 +766,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_D8A22BEC3952446C8C0BFF408FADE290"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -773,12 +779,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_ACD6B72CE78C4F3F85A59983F636207E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D7D79A7B4257BD6E0E21D0B720B99865"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1091,6 +1091,62 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_5214E1C56A0949818381D6618B358556"
+            {
+            "Name" = "8:Primary output from JobSchedulerService (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
+            "FileType" = "3:2"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_730C1104_881E_4798_896D_EAE79870040F"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_73D61B28CD88432CB635066ADDD681CA"
+            {
+            "Name" = "8:Primary output from JobSchedulerService (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_349EBFA6_10EE_4FF5_9050_B929F4AACF6C"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D421A7A414E94C6EB7B09AF58ADFCD12"
+            {
+            "Name" = "8:Primary output from JobSchedulerService (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
+            "FileType" = "3:2"
+            "InstallAction" = "3:3"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_1008EB7A_CE18_424B_B318_639A39C1179D"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D863FB833A804FEA9D8ED245CFC72828"
+            {
+            "Name" = "8:Primary output from JobSchedulerService (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_ADB9D3FFECB9441F8F86D034DE25F6ED"
+            "FileType" = "3:2"
+            "InstallAction" = "3:2"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_8450588C_2B84_491A_B5B4_F23E835196D5"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -1382,26 +1438,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_28321722B40F4BC49C04ADF0C875CDB8"
-            {
-            "SourcePath" = "8:..\\JobSchedulerService\\ServiceUnInstall.bat"
-            "TargetName" = "8:ServiceUnInstall.bat"
-            "Tag" = "8:"
-            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_30AD05593975EEAF04DD3B39CFBBCDA6"
             {
             "AssemblyRegister" = "3:1"
@@ -1575,6 +1611,26 @@
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6572580867FF4F91A420F5C945579A65"
+            {
+            "SourcePath" = "8:..\\JobSchedulerService\\ServiceStart.bat"
+            "TargetName" = "8:ServiceStart.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6A6271A3C84CA3C814F5F8E88EF09DEB"
@@ -1856,26 +1912,6 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_943596C6BA1A481587A5B95C5AE2C6C4"
-            {
-            "SourcePath" = "8:..\\JobSchedulerService\\ServiceInstall.bat"
-            "TargetName" = "8:ServiceInstall.bat"
-            "Tag" = "8:"
-            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9E805197DDC4044424B07DF0B7403A1D"
             {
             "AssemblyRegister" = "3:1"
@@ -2051,6 +2087,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D3402C7A1BCC41269337C0302D995D01"
+            {
+            "SourcePath" = "8:..\\JobSchedulerService\\ServiceStop.bat"
+            "TargetName" = "8:ServiceStop.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D57130D4DBA71EB43EB698EA8F9B4EDF"
             {
             "AssemblyRegister" = "3:1"
@@ -2068,37 +2124,6 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75ED973E861846A6AF9D68F768BD1DF4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D7D79A7B4257BD6E0E21D0B720B99865"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ScheduledJob, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_D7D79A7B4257BD6E0E21D0B720B99865"
-                    {
-                    "Name" = "8:ScheduledJob.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:ScheduledJob.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -2172,6 +2197,37 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:ScheduledJob, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E4B7756EF38AF7DCFB92E0D24FBCA70E"
+                    {
+                    "Name" = "8:ScheduledJob.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:ScheduledJob.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -2336,7 +2392,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Job Scheduler"
         "ProductCode" = "8:{7A270875-3B31-49F7-B6C6-16D87BBAD015}"
-        "PackageCode" = "8:{8376E64E-CEFC-45EE-974E-4042345209F2}"
+        "PackageCode" = "8:{2804FEA1-2B6B-427B-936A-2FB2B596BD11}"
         "UpgradeCode" = "8:{42D47909-4F20-4E6E-9C98-085336C87661}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -2857,7 +2913,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_49B26A85DF2D4915A33FC97483A3DE2E"
             {
-            "SourcePath" = "8:..\\WorkOrderImportJob\\obj\\Debug\\WorkOrderImportJob.PlugIn.dll"
+            "SourcePath" = "8:..\\WorkOrderImportJob\\obj\\Release\\WorkOrderImportJob.PlugIn.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75ED973E861846A6AF9D68F768BD1DF4"
@@ -2885,7 +2941,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7DC9248E2E134E528B0A1217EBD09AE1"
             {
-            "SourcePath" = "8:..\\SimpleLogJob\\obj\\Debug\\SimpleLogJob.PlugIn.dll"
+            "SourcePath" = "8:..\\SimpleLogJob\\obj\\Release\\SimpleLogJob.PlugIn.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75ED973E861846A6AF9D68F768BD1DF4"
@@ -2913,7 +2969,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_AAA73269FE5C4E13AFED38C5BAFB6FFE"
             {
-            "SourcePath" = "8:..\\JobSchedulerUI\\obj\\x86\\Debug\\JobSchedulerUI.exe"
+            "SourcePath" = "8:..\\JobSchedulerUI\\obj\\x86\\Release\\JobSchedulerUI.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
@@ -2941,7 +2997,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_ADB9D3FFECB9441F8F86D034DE25F6ED"
             {
-            "SourcePath" = "8:..\\JobSchedulerService\\obj\\x86\\Debug\\JobSchedulerService.exe"
+            "SourcePath" = "8:..\\JobSchedulerService\\obj\\x86\\Release\\JobSchedulerService.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"
@@ -2969,7 +3025,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_B0D0C53441D142A8BF2557FFFDAAB1A9"
             {
-            "SourcePath" = "8:..\\ExportBillingUpdatesJob\\obj\\Debug\\ExportBillingUpdatesJob.PlugIn.dll"
+            "SourcePath" = "8:..\\ExportBillingUpdatesJob\\obj\\Release\\ExportBillingUpdatesJob.PlugIn.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_75ED973E861846A6AF9D68F768BD1DF4"
@@ -2997,7 +3053,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E98042E2B594414187EC58A391DC3982"
             {
-            "SourcePath" = "8:..\\ScheduledJob\\obj\\Debug\\ScheduledJob.dll"
+            "SourcePath" = "8:..\\ScheduledJob\\obj\\Release\\ScheduledJob.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_AFA0CD51615F45F685F58A220A5246AF"

@@ -97,12 +97,18 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                                                     + "from {1} _ExportList WHERE srvinv.recnum = _ExportList.recnum",
                                                         DateTime.Now.ToFoxproDate(), _exportlist);
                         this.Log("Updated work orders");
-                    }                    
+                    }
+                    else
+                    {
+                        this.Log("No rows to process");
+                    }
                 }
             }            
 
             //Log end of execution, time etc.
             this.Log("Finished execution of export billing updates job.");
+
+            this.Log("----------------------------------------------------------------------------------------\n\n");
         }
 
 

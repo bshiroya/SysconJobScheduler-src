@@ -61,23 +61,23 @@
     <Compile Include="JobSchedulerWCFWinService.Designer.cs">
       <DependentUpon>JobSchedulerWCFWinService.cs</DependentUpon>
     </Compile>
-    <Compile Include="JobSchedulerWinServiceInstaller.cs">
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="JobSchedulerWinServiceInstaller.Designer.cs">
-      <DependentUpon>JobSchedulerWinServiceInstaller.cs</DependentUpon>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="ServiceInstall.bat">
+    <None Include="ServiceStart.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="ServiceUnInstall.bat">
+    <None Include="ServiceStop.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -87,6 +87,11 @@
       <Name>ScheduledJob</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
