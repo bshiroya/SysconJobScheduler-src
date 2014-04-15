@@ -16,6 +16,7 @@ using SysconCommon.Common;
 using SysconCommon.Common.Environment;
 
 using Syscon.ScheduledJob;
+using System.Diagnostics;
 
 namespace Syscon.JobSchedulerUI
 {
@@ -101,6 +102,19 @@ namespace Syscon.JobSchedulerUI
         
         private void JobScheduler_Load(object sender, EventArgs e)
         {
+            //Check whether service is running
+            if (CheckJobSchedulerSvcRunning())
+            {
+                lblSvcStatus.Text = "Service Running";
+                lblSvcStatus.ForeColor = Color.Blue;
+            }
+            else
+            {
+                lblSvcStatus.Text = "Service not Running";
+                lblSvcStatus.ForeColor = Color.Red;
+            }
+
+
             // resets it everytime it is run so that the user can't just change to a product they already have a license for
             Env.SetConfigVar("product_id", 178507);
 
@@ -182,6 +196,10 @@ namespace Syscon.JobSchedulerUI
 
         private void LoadJobsDataGrid()
         {
+            //Clear the data grid if loaded
+            this.jobListBindingSrc.Clear();
+            jobsDataGridView.Columns.Clear();
+
             this.jobsDataGridView.DataSource = this.jobListBindingSrc;
 
             DataGridViewColumn desCol = new DataGridViewTextBoxColumn();
@@ -201,6 +219,7 @@ namespace Syscon.JobSchedulerUI
             timeCol.DataPropertyName = "ScheduledTime";
             timeCol.Name = "Time";
             timeCol.ReadOnly = true;
+            timeCol.Width = 80;
             jobsDataGridView.Columns.Add(timeCol);
 
             DataGridViewButtonColumn confiCol = new DataGridViewButtonColumn();
@@ -212,13 +231,21 @@ namespace Syscon.JobSchedulerUI
             DataGridViewCheckBoxColumn enueueCol = new DataGridViewCheckBoxColumn();
             enueueCol.DataPropertyName = "Enqueued";
             enueueCol.Name = "Enqueue";
+            enueueCol.Width = 70;
             jobsDataGridView.Columns.Add(enueueCol);
 
-            DataGridViewTextBoxColumn column6 = new DataGridViewTextBoxColumn();
-            column6.DataPropertyName = "LogFile";
-            column6.Name = "LogFile";
-            column6.ReadOnly = true;
-            jobsDataGridView.Columns.Add(column6);
+            DataGridViewButtonColumn runJobCol = new DataGridViewButtonColumn();
+            runJobCol.Name = "Run";
+            runJobCol.Text = "Run Now";
+            runJobCol.UseColumnTextForButtonValue = true;
+            jobsDataGridView.Columns.Add(runJobCol);
+
+            DataGridViewTextBoxColumn logFileCol = new DataGridViewTextBoxColumn();
+            logFileCol.DataPropertyName = "LogFile";
+            logFileCol.Name = "LogFile";
+            logFileCol.ReadOnly = true;
+            logFileCol.Width = 150;
+            jobsDataGridView.Columns.Add(logFileCol);
 
             foreach (IScheduledJob job in _scheduledJobs)
             {
@@ -266,20 +293,15 @@ namespace Syscon.JobSchedulerUI
             }
             if (e.ColumnIndex == jobsDataGridView.Columns["LogFile"].Index && e.RowIndex >= 0)
             {
-                string filepath = scheduledJobModel.Job.LogFilePath;//(string)jobsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                string filepath = scheduledJobModel.Job.LogFilePath;
                 if (File.Exists(filepath))
                 {
                     System.Diagnostics.Process.Start(filepath);
-                }
-                else
-                {                    
-                    MessageBox.Show("Log file does not exist.");
-                }
+                }                
             }
 
             if (e.ColumnIndex == jobsDataGridView.Columns["Enqueue"].Index && e.RowIndex >= 0)
             {
-                //TODO: Correct this one. Checkbox state is not available
                 DataGridViewCheckBoxColumn col = jobsDataGridView.Columns["Enqueue"] as DataGridViewCheckBoxColumn;
                 DataGridViewCheckBoxCell cell = jobsDataGridView.Rows[e.RowIndex].Cells["Enqueue"] as DataGridViewCheckBoxCell;
 
@@ -300,8 +322,13 @@ namespace Syscon.JobSchedulerUI
                 config.Save(ConfigurationSaveMode.Modified);
             }
 
-            jobsDataGridView.Refresh();
+            //Run now functionality
+            if (e.ColumnIndex == jobsDataGridView.Columns["Run"].Index && e.RowIndex >= 0)
+            {
+                scheduledJobModel.Job.ExceuteJob();
+            }
 
+            jobsDataGridView.Refresh();
         }
 
         private void btnSMBDir_Click(object sender, EventArgs e)
@@ -341,7 +368,7 @@ namespace Syscon.JobSchedulerUI
 
         private void onlineHelpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("http://syscon-inc.com/product-support/2165/support.asp");
+            System.Diagnostics.Process.Start("http://syscon-inc.com/product-support/CustomApplication/support.asp");
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -350,5 +377,13 @@ namespace Syscon.JobSchedulerUI
             //frm.ShowDialog();
         }
 
+        private bool CheckJobSchedulerSvcRunning()
+        {
+            bool isRunning = false;
+
+            isRunning = (Process.GetProcessesByName("JobSchedulerService").Length == 1);
+
+            return isRunning;
+        }
     }
 }

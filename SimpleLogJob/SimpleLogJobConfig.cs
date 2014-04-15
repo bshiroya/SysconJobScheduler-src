@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Xml.Serialization;
 
 using Syscon.ScheduledJob;
-using System.Xml.Serialization;
-using System.Reflection;
-
 
 namespace Syscon.ScheduledJob.SimpleLogJob
 {
@@ -57,20 +56,41 @@ namespace Syscon.ScheduledJob.SimpleLogJob
             get;
             set;
         }
-        
 
-        //public override void LoadConfig()
-        //{
-        //    //Load the config settings.
-        //    base.LoadConfig();
-            
-        //}
+        /// <summary>
+        /// Load config
+        /// </summary>
+        public override void LoadConfig()
+        {
+            XmlSerializer _xmlSerializer = new XmlSerializer(this.GetType());
 
-        //public override void SaveConfig()
-        //{
-        //    //Serialize the job config
-        //    XmlSerializer serializer = new XmlSerializer(typeof(SimpleLogJobConfig));
-        //    TextWriter txtWriter = new StreamWriter("SimpleLogJobConfig.xml");
-        //}
+            try
+            {
+                string configFile = string.Format(@"{0}\{1}.xml", AssemblyPath, AssemblyName);
+
+                if (File.Exists(configFile))
+                {
+                    using (FileStream stream = new FileInfo(configFile).OpenRead())
+                    {
+                        var dsObj = _xmlSerializer.Deserialize(stream);
+                        SimpleLogJobConfig config   = dsObj as SimpleLogJobConfig;
+                        SMBDir                      = config.SMBDir;
+                        ScheduledTime               = config.ScheduledTime;
+                        LogFilePath                 = config.LogFilePath;
+                        UserId                      = config.UserId;
+                        Password                    = config.Password;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+            }
+            finally
+            {
+                _xmlSerializer = null;
+            }
+        }
+
     }
 }

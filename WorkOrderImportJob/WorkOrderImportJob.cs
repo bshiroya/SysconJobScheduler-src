@@ -169,6 +169,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
 
             //Log end of execution, time etc.
             this.Log("Finished execution of work order import job.");
+            this.Log("-----------------------------------------------------------------------------------------\n");
         }
 
         /// <summary>

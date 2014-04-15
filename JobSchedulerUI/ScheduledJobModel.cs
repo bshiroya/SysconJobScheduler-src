@@ -71,7 +71,7 @@ namespace Syscon.JobSchedulerUI
         {
             get
             {
-                return Job.ScheduledTime.ToShortTimeString();
+                return Job.JobConfig.ScheduledTime.ToShortTimeString();
             }
         }
 

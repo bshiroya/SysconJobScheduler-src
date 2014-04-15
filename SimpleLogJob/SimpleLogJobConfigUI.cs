@@ -3,26 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Syscon.ScheduledJob;
 using System.Xml.Serialization;
-using System.IO;
+
+using Syscon.ScheduledJob;
 
 namespace Syscon.ScheduledJob.SimpleLogJob
 {
     public partial class SimpleLogJobConfigUI : Form
     {
-        private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
         SimpleLogJobConfig _jobConfig = null;
 
         public SimpleLogJobConfigUI(IScheduledJob job )
         {
             InitializeComponent();
             _jobConfig = new SimpleLogJobConfig(job);
-
-            //_jobConfig = jobConfig as SimpleLogJobConfig;
         }
 
         #region Event Handlers
@@ -32,15 +30,29 @@ namespace Syscon.ScheduledJob.SimpleLogJob
             LoadConfig();
 
             //Bind to controls
-            txtDataDir.Text = mbapi.smartGetSMBDir();
+            txtSMBDir.Text      = _jobConfig.SMBDir;
+            txtLogFilePath.Text = _jobConfig.LogFilePath;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            _jobConfig.SMBDir = txtDataDir.Text;
+            if (string.IsNullOrEmpty(txtSMBDir.Text))
+            {
+                MessageBox.Show("Please select a Sage database directory.", "Select Sage directory", MessageBoxButtons.OK);
+                return;
+            }
+            //txtLogFilePath.Text
+            if (string.IsNullOrEmpty(txtLogFilePath.Text) && (!File.Exists(txtLogFilePath.Text)))
+            {
+                MessageBox.Show("Please set a valid log file path.", "Select Log File", MessageBoxButtons.OK);
+                return;
+            }
+
+            _jobConfig.SMBDir = txtSMBDir.Text;
             _jobConfig.UserId = "";
             _jobConfig.Password = "";
             _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
+            _jobConfig.LogFilePath = txtLogFilePath.Text;
 
             //Save the config
             SaveConfig();
@@ -83,7 +95,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         }
 
         /// <summary>
-        /// 
+        /// Load the settings from config file.
         /// </summary>
         public virtual void LoadConfig()
         {
@@ -102,6 +114,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                         _jobConfig.SMBDir = tempConfig.SMBDir;
                         _jobConfig.UserId = tempConfig.UserId;
                         _jobConfig.Password = tempConfig.Password;
+                        _jobConfig.LogFilePath = tempConfig.LogFilePath;
                     }
                 }
             }
@@ -112,6 +125,25 @@ namespace Syscon.ScheduledJob.SimpleLogJob
             finally
             {
                 _xmlSerializer = null;
+            }
+        }
+
+        private void btnSMBDir_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                txtSMBDir.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void btnLogFile_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Title = "Set Log File";
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK && saveFileDialog1.OpenFile() != null)
+            {
+                txtLogFilePath.Text = saveFileDialog1.FileName;
             }
         }
 
