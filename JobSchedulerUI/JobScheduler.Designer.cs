@@ -47,6 +47,7 @@
             this.jobListBindingSrc = new System.Windows.Forms.BindingSource(this.components);
             this.lblSvc = new System.Windows.Forms.Label();
             this.lblSvcStatus = new System.Windows.Forms.Label();
+            this.btnStartService = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.jobsDataGridView)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -198,17 +199,28 @@
             // lblSvcStatus
             // 
             this.lblSvcStatus.AutoSize = true;
-            this.lblSvcStatus.Location = new System.Drawing.Point(137, 93);
+            this.lblSvcStatus.Location = new System.Drawing.Point(143, 94);
             this.lblSvcStatus.Name = "lblSvcStatus";
             this.lblSvcStatus.Size = new System.Drawing.Size(16, 13);
             this.lblSvcStatus.TabIndex = 26;
             this.lblSvcStatus.Text = "...";
+            // 
+            // btnStartService
+            // 
+            this.btnStartService.Location = new System.Drawing.Point(264, 91);
+            this.btnStartService.Name = "btnStartService";
+            this.btnStartService.Size = new System.Drawing.Size(83, 25);
+            this.btnStartService.TabIndex = 27;
+            this.btnStartService.Text = "Start Service";
+            this.btnStartService.UseVisualStyleBackColor = true;
+            this.btnStartService.Click += new System.EventHandler(this.btnStartService_Click);
             // 
             // JobScheduler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(947, 409);
+            this.Controls.Add(this.btnStartService);
             this.Controls.Add(this.lblSvcStatus);
             this.Controls.Add(this.lblSvc);
             this.Controls.Add(this.menuStrip1);
@@ -249,6 +261,7 @@
         private System.Windows.Forms.BindingSource jobListBindingSrc;
         private System.Windows.Forms.Label lblSvc;
         private System.Windows.Forms.Label lblSvcStatus;
+        private System.Windows.Forms.Button btnStartService;
 
     }
 }

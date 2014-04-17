@@ -385,5 +385,27 @@ namespace Syscon.JobSchedulerUI
 
             return isRunning;
         }
+
+        private void btnStartService_Click(object sender, EventArgs e)
+        {
+            if (!CheckJobSchedulerSvcRunning())
+            {
+                //Start the service
+                Process svcProcess = new Process();
+                svcProcess.StartInfo.FileName = "sc.exe";
+                svcProcess.StartInfo.Arguments = "start JobSchedulerService";
+
+                if (svcProcess.Start())
+                {
+                    lblSvcStatus.Text = "Service Running";
+                    lblSvcStatus.ForeColor = Color.Blue;
+                }
+                else
+                {
+                    lblSvcStatus.Text = "Service not Running";
+                    lblSvcStatus.ForeColor = Color.Red;
+                }
+            }
+        }
     }
 }

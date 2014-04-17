@@ -31,6 +31,8 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 
             //Bind to controls
             txtSMBDir.Text      = _jobConfig.SMBDir;
+            txtUserName.Text    = _jobConfig.UserId;
+            txtPwd.Text         = _jobConfig.Password;
             txtLogFilePath.Text = _jobConfig.LogFilePath;
         }
 
@@ -41,16 +43,30 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                 MessageBox.Show("Please select a Sage database directory.", "Select Sage directory", MessageBoxButtons.OK);
                 return;
             }
-            //txtLogFilePath.Text
+
+            if (string.IsNullOrEmpty(txtUserName.Text))
+            {
+                MessageBox.Show("Please give a valid username.", "Provide username", MessageBoxButtons.OK);
+                return;
+            }
+
+            if (txtPwd.Text != txtVerifyPwd.Text)
+            {
+                MessageBox.Show("The two given password doesn't match.", "Password mismatch", MessageBoxButtons.OK);
+                return;
+            }
+
             if (string.IsNullOrEmpty(txtLogFilePath.Text) && (!File.Exists(txtLogFilePath.Text)))
             {
                 MessageBox.Show("Please set a valid log file path.", "Select Log File", MessageBoxButtons.OK);
                 return;
             }
 
+            
+
             _jobConfig.SMBDir = txtSMBDir.Text;
-            _jobConfig.UserId = "";
-            _jobConfig.Password = "";
+            _jobConfig.UserId = txtUserName.Text;
+            _jobConfig.Password = txtPwd.Text;
             _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
             _jobConfig.LogFilePath = txtLogFilePath.Text;
 

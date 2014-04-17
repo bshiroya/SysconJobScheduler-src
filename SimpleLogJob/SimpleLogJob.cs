@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
 using System.ComponentModel.Composition;
 using System.Data.OleDb;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Xml.Linq;
 
+using SysconCommon;
+using SysconCommon.Algebras.DataTables;
 using SysconCommon.Common;
 using SysconCommon.Common.Environment;
-using SysconCommon.Algebras.DataTables;
 using SysconCommon.DBManipulate;
-using SysconCommon.GUI;
 using SysconCommon.Foxpro;
+using SysconCommon.GUI;
 
 using Syscon.ScheduledJob;
-using System.IO;
-
 
 namespace Syscon.ScheduledJob.SimpleLogJob
 {
@@ -29,10 +29,11 @@ namespace Syscon.ScheduledJob.SimpleLogJob
     [DataContract]
     public class SimpleLogJob : IScheduledJob
     {
-        IScheduledJobConfig _jobConfig = null;
+        SimpleLogJobConfig _jobConfig = null;
         SimpleLogJobConfigUI configUI = null;
 
         DateTime _scheduledTime;
+        COMMethods _methods = null;
 
         /// <summary>
         /// Ctor
@@ -40,8 +41,9 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         public SimpleLogJob()
         {
             _jobConfig = new SimpleLogJobConfig(this);
-
             configUI = new SimpleLogJobConfigUI(this);
+
+            _methods = new COMMethods();
 
             //Load the config
             _jobConfig.LoadConfig();
@@ -60,6 +62,16 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 
             using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
+                var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
+
+                //Login to the SMB Dir
+                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
+                if (login_result == 0)
+                {
+                    this.Log("Login failure - Invalid user name or password. Exiting job...");
+                    return;
+                }
+
                 int count = con.GetScalar<int>("select count(*) from lgrtrn");
 
                 //Log the result
@@ -77,10 +89,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         {
             if (configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                //TODO: The config saving and loading logic should be outside the config. 
-                //Possibly put the logic inside this ConfigUI itself.
-                //_jobConfig.SaveConfig();
-
                 _jobConfig.LoadConfig();
             }
         }
@@ -189,19 +197,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                 Env.Log("Error writing to the simple log job file \n" + ex.Message);
             }
         }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <returns></returns>
-        //public XElement SaveAsXml()
-        //{
-        //    return new XElement("FilterSettings", new object[]
-        //    {
-        //        new XElement("ShowInternalAPI", true),
-        //        new XElement("Language", "")
-        //    });
-        //}
 
         #endregion
 

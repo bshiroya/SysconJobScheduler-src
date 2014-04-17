@@ -40,6 +40,12 @@
             this.txtLogFilePath = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.txtVerifyPwd = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtPwd = new System.Windows.Forms.TextBox();
+            this.txtUserName = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,7 +73,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(31, 60);
+            this.label1.Location = new System.Drawing.Point(31, 147);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 13);
             this.label1.TabIndex = 25;
@@ -78,7 +84,7 @@
             this.bottomPanel.Controls.Add(this.btnCancel);
             this.bottomPanel.Controls.Add(this.btnOk);
             this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 155);
+            this.bottomPanel.Location = new System.Drawing.Point(0, 212);
             this.bottomPanel.Name = "bottomPanel";
             this.bottomPanel.Size = new System.Drawing.Size(607, 35);
             this.bottomPanel.TabIndex = 28;
@@ -108,7 +114,7 @@
             // scheduleTimePicker
             // 
             this.scheduleTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.scheduleTimePicker.Location = new System.Drawing.Point(135, 60);
+            this.scheduleTimePicker.Location = new System.Drawing.Point(132, 147);
             this.scheduleTimePicker.Name = "scheduleTimePicker";
             this.scheduleTimePicker.ShowCheckBox = true;
             this.scheduleTimePicker.ShowUpDown = true;
@@ -118,7 +124,7 @@
             // btnLogFile
             // 
             this.btnLogFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLogFile.Location = new System.Drawing.Point(511, 86);
+            this.btnLogFile.Location = new System.Drawing.Point(511, 173);
             this.btnLogFile.Name = "btnLogFile";
             this.btnLogFile.Size = new System.Drawing.Size(90, 23);
             this.btnLogFile.TabIndex = 44;
@@ -128,7 +134,7 @@
             // 
             // txtLogFilePath
             // 
-            this.txtLogFilePath.Location = new System.Drawing.Point(135, 88);
+            this.txtLogFilePath.Location = new System.Drawing.Point(132, 175);
             this.txtLogFilePath.Name = "txtLogFilePath";
             this.txtLogFilePath.ReadOnly = true;
             this.txtLogFilePath.Size = new System.Drawing.Size(370, 20);
@@ -137,17 +143,73 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(31, 92);
+            this.label5.Location = new System.Drawing.Point(31, 179);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(44, 13);
             this.label5.TabIndex = 42;
             this.label5.Text = "Log File";
             // 
+            // txtVerifyPwd
+            // 
+            this.txtVerifyPwd.Location = new System.Drawing.Point(132, 110);
+            this.txtVerifyPwd.Name = "txtVerifyPwd";
+            this.txtVerifyPwd.PasswordChar = '*';
+            this.txtVerifyPwd.Size = new System.Drawing.Size(118, 20);
+            this.txtVerifyPwd.TabIndex = 50;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(31, 113);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(82, 13);
+            this.label4.TabIndex = 49;
+            this.label4.Text = "Verify Password";
+            // 
+            // txtPwd
+            // 
+            this.txtPwd.Location = new System.Drawing.Point(132, 81);
+            this.txtPwd.Name = "txtPwd";
+            this.txtPwd.PasswordChar = '*';
+            this.txtPwd.Size = new System.Drawing.Size(118, 20);
+            this.txtPwd.TabIndex = 48;
+            // 
+            // txtUserName
+            // 
+            this.txtUserName.Location = new System.Drawing.Point(132, 53);
+            this.txtUserName.Name = "txtUserName";
+            this.txtUserName.Size = new System.Drawing.Size(118, 20);
+            this.txtUserName.TabIndex = 47;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(31, 81);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 13);
+            this.label3.TabIndex = 46;
+            this.label3.Text = "Password";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(31, 56);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 45;
+            this.label2.Text = "User Id";
+            // 
             // SimpleLogJobConfigUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(607, 190);
+            this.ClientSize = new System.Drawing.Size(607, 247);
+            this.Controls.Add(this.txtVerifyPwd);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtPwd);
+            this.Controls.Add(this.txtUserName);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.btnLogFile);
             this.Controls.Add(this.txtLogFilePath);
             this.Controls.Add(this.label5);
@@ -180,5 +242,11 @@
         private System.Windows.Forms.TextBox txtLogFilePath;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.TextBox txtVerifyPwd;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtPwd;
+        private System.Windows.Forms.TextBox txtUserName;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
     }
 }

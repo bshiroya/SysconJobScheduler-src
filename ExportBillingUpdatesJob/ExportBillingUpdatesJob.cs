@@ -65,7 +65,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                     var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
 
                     //Login to the SMB Dir
-                    var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId, hashed_password);
+                    var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
                     if (login_result == 0)
                     {
                         this.Log("Login failure - Invalid user name or password. Exiting job...");
@@ -75,7 +75,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                     //Get the list of invoices that have been completed (status = 8) 
                     //or posted as invoices (status = 1,2,3,4) and have not been sent 
                     //to the export file yet.
-                    con.ExecuteNonQuery("SELECT s.recnum, s.invnum, s.invttl, s.usrdf1 FROM srvinv s WHERE INLIST(s.status, 1,2,3,4,8) AND EMPTY(s.usrdf1) "
+                    con.ExecuteNonQuery("SELECT s.recnum, s.ordnum, s.invnum, s.invttl, s.usrdf1 FROM srvinv s WHERE INLIST(s.status, 1,2,3,4,8) AND EMPTY(s.usrdf1) "
                                         + "INTO Table {0}", _exportlist);
 
                     DataTable dt = con.GetDataTable("srvinv", "SELECT * from {0}", _exportlist);
@@ -87,7 +87,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 
                         //Put the data to the .csv file
                         DataView view = new DataView(dt);
-                        DataTable dtSpecificCols = view.ToTable(false, new string[] { "invnum", "invttl" });
+                        DataTable dtSpecificCols = view.ToTable(false, new string[] { "ordnum", "invnum", "invttl" });
 
                         dtSpecificCols.SaveAsCSV(csvFile);
                         this.Log("Exported billing updates to file : {0}", Path.GetFileName(csvFile));

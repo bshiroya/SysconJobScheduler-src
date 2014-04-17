@@ -81,89 +81,95 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                 string currentFilePath = _jobConfig.WorkOrderQueueDirectory;
                 string[] files = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
 
-                foreach (string fileName in files)
+                try
                 {
-                    //Read all .csv files one by one, create the xml and send to Sage 100 using the Sage APIs
-                    string fileNameWithoutPath = fileName.Substring(fileName.LastIndexOf('\\') + 1);
-
-                    //Log the filename in the log file
-                    this.Log("Processing file - {0}", fileNameWithoutPath);
-
-                    try
+                    foreach (string fileName in files)
                     {
-                        DataTable dt = SysconCommon.Algebras.DataTables.DatatableExtensions.DataTableFromCSV("WorkOrders", fileName, true);
+                        //Read all .csv files one by one, create the xml and send to Sage 100 using the Sage APIs
+                        string fileNameWithoutPath = fileName.Substring(fileName.LastIndexOf('\\') + 1);
 
-                        foreach (DataRow dr in dt.Rows)
+                        //Log the filename in the log file
+                        this.Log("Processing file - {0}", fileNameWithoutPath);
+
+                        try
                         {
-                            //i.	Determine if the work order already exists based on the OrderNumber 
+                            DataTable dt = SysconCommon.Algebras.DataTables.DatatableExtensions.DataTableFromCSV("WorkOrders", fileName, true);
 
-                            var result = con.GetScalar<int>("select count(*) from srvinv where ordnum='{0}'", dr["OrderNumber"]);
-                            if (result == 0)
+                            foreach (DataRow dr in dt.Rows)
                             {
-                                //Order number does not exits, create it.
-                                string orderNum     = (string)dr["OrderNumber"];
-                                string clientRef    = (string)dr["ClientRef"];
-                                string desc         = (string)dr["Desc"];
-
-                                //1. If the following fields do not exist in the csv file then skip this entry.
-                                if (string.IsNullOrEmpty(orderNum) || string.IsNullOrEmpty(clientRef) || string.IsNullOrEmpty(desc))
+                                //i.	Determine if the work order already exists based on the OrderNumber 
+                                var result = con.GetScalar<int>("select count(*) from srvinv where ordnum='{0}'", dr["OrderNumber"]);
+                                if (result == 0)
                                 {
-                                    this.Log("Invalid record in csv file - {0}. Skipping this entry, OrderNumber = {1}, ClientRef = {2}, Desc = {3}.",
-                                                        fileNameWithoutPath, orderNum, clientRef, desc);
-                                    continue;
-                                }
+                                    //Order number does not exits, create it.
+                                    string orderNum = (string)dr["OrderNumber"];
+                                    string clientRef = (string)dr["ClientRef"];
+                                    string desc = (string)dr["Desc"];
 
-                                string iXMLdoc = CreateWorkOrderXml(dr);
+                                    //1. If the following fields do not exist in the csv file then skip this entry.
+                                    if (string.IsNullOrEmpty(orderNum) || string.IsNullOrEmpty(clientRef) || string.IsNullOrEmpty(desc))
+                                    {
+                                        this.Log("Invalid record in csv file - {0}. Skipping this entry, OrderNumber = {1}, ClientRef = {2}, Desc = {3}.",
+                                                            fileNameWithoutPath, orderNum, clientRef, desc);
+                                        continue;
+                                    }
 
-                                // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
-                                string iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
+                                    string iXMLdoc = CreateWorkOrderXml(dr);
 
-                                //Process the response Xml
-                                //If - statusCode="0" statusMessage="Ok" - Then SUCCESS
-                                if (!(iXMLOut.Contains("statusCode=\"0\"") && iXMLOut.Contains("statusMessage=\"Ok\"")))
-                                {
-                                    this.Log("Failed to add record for Order Number - {0}", dr["OrderNumber"]);
-                                    this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                    // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
+                                    string iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
+
+                                    //Process the response Xml
+                                    //If - statusCode="0" statusMessage="Ok" - Then SUCCESS
+                                    if (!(iXMLOut.Contains("statusCode=\"0\"") && iXMLOut.Contains("statusMessage=\"Ok\"")))
+                                    {
+                                        this.Log("Failed to add record for Order Number - {0}", dr["OrderNumber"]);
+                                        this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                    }
+                                    else
+                                    {
+                                        this.Log("Record sucessfully added for new Order Number - {0}", dr["OrderNumber"]);
+                                        this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                    }
                                 }
                                 else
                                 {
-                                    this.Log("Record sucessfully added for new Order Number - {0}", dr["OrderNumber"]);
-                                    this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                    int recNum = con.GetScalar<int>("select recnum from srvinv where ordnum='{0}'", dr["OrderNumber"]);
+
+                                    //Order number exists, Update it. For updation recnum is required.
+                                    string iXMLdoc = CreateWorkOrderUpdateXml(dr, recNum);
+
+                                    // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
+                                    string iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
+
+                                    if (iXMLOut.Contains("statusCode=\"0\"") && iXMLOut.Contains("statusMessage=\"Ok\""))
+                                    {
+                                        this.Log("Record sucessfully updated. Invoice Number - {0}, RecNum - {1}", dr["OrderNumber"], recNum);
+                                        this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                    }
                                 }
                             }
-                            else
-                            {
-                                int recNum = con.GetScalar<int>("select recnum from srvinv where ordnum='{0}'", dr["OrderNumber"]);
 
-                                //Order number exists, Update it. For updation recnum is required.
-                                string iXMLdoc = CreateWorkOrderUpdateXml(dr, recNum);
+                            this.Log("The file - {0} has been processed successfully.", fileNameWithoutPath);
 
-                                // Submit XML request and get response. Provide the password that matches the user ID specified in the XML document
-                                string iXMLOut = _iXML.submitXML(iXMLdoc, _jobConfig.Password);
-
-                                if (iXMLOut.Contains("statusCode=\"0\"") && iXMLOut.Contains("statusMessage=\"Ok\""))
-                                {
-                                    this.Log("Record sucessfully updated. Invoice Number - {0}, RecNum - {1}", dr["OrderNumber"], recNum);
-                                    this.Log("Response Xml from Sage - \n {0}", iXMLOut);
-                                }
-                            }
+                            //If file is successfully processed then move it into a child archive folder so that it is not processed again
+                            this.MoveFileToProcessedFolder(fileName);
                         }
-
-                        this.Log("The file - {0} has been processed successfully.", fileNameWithoutPath);
-
-                        //If file is successfully processed then move it into a child archive folder so that it is not processed again
-                        this.MoveFileToProcessedFolder(fileName);
+                        catch (Exception ex)
+                        {
+                            this.Log("Exception in work order import job while processing file - {0}.\nException Message - {1} \nStack trace - {2}",
+                                                fileNameWithoutPath, ex.Message, ex.StackTrace);
+                        }                        
                     }
-                    catch (Exception ex)
-                    {
-                        this.Log("Exception in work order import job while processing file - {0}.\nException Message - {1} \nStack trace - {2}",
-                                            fileNameWithoutPath, ex.Message, ex.StackTrace);
-                    }
-                    finally
-                    {
-                        _iXML.DisableRequests();
-                        _iXML.DeIntializeAPI();
-                    }
+                }
+                catch (Exception ex)
+                {
+                    this.Log("Exception in work order import job. Exception - {0}", ex.Message);
+                }
+                finally
+                {
+                    _iXML.DisableRequests();
+                    _iXML.DeIntializeAPI();
                 }
             }
 
