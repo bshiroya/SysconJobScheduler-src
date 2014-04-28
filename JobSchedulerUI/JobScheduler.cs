@@ -17,6 +17,7 @@ using SysconCommon.Common.Environment;
 
 using Syscon.ScheduledJob;
 using System.Diagnostics;
+using Microsoft.Win32.TaskScheduler;
 
 namespace Syscon.JobSchedulerUI
 {
@@ -30,7 +31,7 @@ namespace Syscon.JobSchedulerUI
         bool loaded = false;
 
         IList<IScheduledJob> _scheduledJobs = new List<IScheduledJob>();
-        private IDictionary<string, string> _scheduledJobAndTime = new Dictionary<string, string>();
+        private IDictionary<string, bool> _scheduledJobAndStatus = new Dictionary<string, bool>();
 
         #endregion
 
@@ -43,13 +44,19 @@ namespace Syscon.JobSchedulerUI
 
             LoadJobPlugIns();
 
-            //Load which jobs are already scheduled in the service.
-            string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(string.Format(@"{0}\JobSchedulerService.exe", exeLocation));
-
-            foreach (KeyValueConfigurationElement keyVal in config.AppSettings.Settings)
+            using (TaskService ts = new TaskService())
             {
-                _scheduledJobAndTime.Add(keyVal.Key, keyVal.Value);
+                //Load which jobs are already scheduled in the service.
+                foreach (IScheduledJob job in this.ScheduledJobs)
+                {
+                    string jobName = job.ToString().Substring(job.ToString().LastIndexOf('.') + 1);
+                    string taskName = jobName + "-" + job.JobId.ToString();
+
+                    // Retrieve the task, change the trigger and re-register it
+                    Task t = ts.GetTask(taskName);
+                    
+                    _scheduledJobAndStatus.Add(job.JobId.ToString(), (t != null));
+                }
             }
         }
 
@@ -102,24 +109,11 @@ namespace Syscon.JobSchedulerUI
         
         private void JobScheduler_Load(object sender, EventArgs e)
         {
-            //Check whether service is running
-            if (CheckJobSchedulerSvcRunning())
-            {
-                lblSvcStatus.Text = "Service Running";
-                lblSvcStatus.ForeColor = Color.Blue;
-            }
-            else
-            {
-                lblSvcStatus.Text = "Service not Running";
-                lblSvcStatus.ForeColor = Color.Red;
-            }
-
-
             // resets it everytime it is run so that the user can't just change to a product they already have a license for
             Env.SetConfigVar("product_id", 178507);
 
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = "1.1.0.0";
+            var product_version = "1.3.0.0";
             bool require_login = false;
 
             if (!loaded)
@@ -249,15 +243,11 @@ namespace Syscon.JobSchedulerUI
 
             foreach (IScheduledJob job in _scheduledJobs)
             {
-                if (_scheduledJobAndTime.ContainsKey(job.JobId.ToString()))
+                if (_scheduledJobAndStatus.ContainsKey(job.JobId.ToString()))
                 {
-                    job.Enqueued = true;
+                    job.Enqueued = _scheduledJobAndStatus[job.JobId.ToString()];
                 }
-                else
-                {
-                    job.Enqueued = false;
-                }
-
+                
                 job.JobConfig.LoadConfig();
 
                 ScheduledJobModel jobModel = new ScheduledJobModel(job);
@@ -275,57 +265,83 @@ namespace Syscon.JobSchedulerUI
             if (e.ColumnIndex == jobsDataGridView.Columns["Config"].Index && e.RowIndex >= 0)
             {
                 scheduledJobModel.Job.SetJobConfiguration();
-
-                //Update job scheduler service config.
-                //Add the entry to service app.config file.
-                string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(string.Format(@"{0}\JobSchedulerService.exe", exeLocation));
-                if (scheduledJobModel.Enqueued)
-                {
-                    config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());
-                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.JobConfig.ScheduledTime.ToShortTimeString());
-                }
-                else
-                {
-                    config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());
-                }
-                config.Save(ConfigurationSaveMode.Modified);
             }
-            if (e.ColumnIndex == jobsDataGridView.Columns["LogFile"].Index && e.RowIndex >= 0)
-            {
-                string filepath = scheduledJobModel.Job.LogFilePath;
-                if (File.Exists(filepath))
-                {
-                    System.Diagnostics.Process.Start(filepath);
-                }                
-            }
-
+            
             if (e.ColumnIndex == jobsDataGridView.Columns["Enqueue"].Index && e.RowIndex >= 0)
             {
                 DataGridViewCheckBoxColumn col = jobsDataGridView.Columns["Enqueue"] as DataGridViewCheckBoxColumn;
                 DataGridViewCheckBoxCell cell = jobsDataGridView.Rows[e.RowIndex].Cells["Enqueue"] as DataGridViewCheckBoxCell;
 
-                scheduledJobModel.Enqueued = !((bool)cell.EditingCellFormattedValue);
-                
+                bool enqueued = !((bool)cell.EditingCellFormattedValue);
+
                 //Add the entry to service app.config file.
                 string exeLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(string.Format(@"{0}\JobSchedulerService.exe", exeLocation));
 
-                if (scheduledJobModel.Enqueued)
+                //Add to the windows scheduler
+                using (TaskService ts = new TaskService())
                 {
-                    config.AppSettings.Settings.Add(scheduledJobModel.Job.JobId.ToString(), scheduledJobModel.Job.JobConfig.ScheduledTime.ToShortTimeString());
+                    string jobName = scheduledJobModel.Job.ToString().Substring(scheduledJobModel.Job.ToString().LastIndexOf('.') + 1);
+                    string taskName = jobName + "-" + scheduledJobModel.Job.JobId.ToString();
+
+                    if (enqueued)
+                    {
+                        //If enqueued then add to the scheduled task list
+                        ScheduledTaskSettingsDialog schedulerTaskSettingsDlg = new ScheduledTaskSettingsDialog();
+                        if (schedulerTaskSettingsDlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            // Create a new task definition and assign properties
+                            TaskDefinition td = ts.NewTask();
+                            td.RegistrationInfo.Description = scheduledJobModel.Job.JobDesc;
+                            td.Principal.LogonType = TaskLogonType.InteractiveToken;
+
+                            // Add a trigger that will fire the task at this time every day
+                            DailyTrigger dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger { DaysInterval = 1, StartBoundary = schedulerTaskSettingsDlg.StartBoundary });
+                            dt.Repetition.Interval = TimeSpan.FromMinutes(schedulerTaskSettingsDlg.TimeInterval);
+
+                            // Add an action that will launch the job runner application for the given job at the scheduled time.
+                            td.Actions.Add(new ExecAction("ScheduledJobRunner.exe", scheduledJobModel.Job.JobId.ToString(), exeLocation));
+
+                            // Register the task in the root folder                        
+                            ts.RootFolder.RegisterTaskDefinition(taskName, td);
+                            scheduledJobModel.Enqueued = enqueued;
+                            //cell.EditingCellFormattedValue = true;
+
+                            MessageBox.Show("Job successfully added to the Windows scheduled tasks.");
+                        }
+                        else
+                        {
+                            scheduledJobModel.Enqueued = false;
+                            //cell.EditingCellFormattedValue = false;
+                        }
+                    }
+                    else
+                    {
+                        Task t = ts.GetTask(taskName);
+
+                        // Remove the task.
+                        ts.RootFolder.DeleteTask(taskName, false);
+                        scheduledJobModel.Enqueued = false;
+                        //cell.EditingCellFormattedValue = false;
+
+                        if (t != null)
+                            MessageBox.Show("Job successfully removed from the Windows scheduled tasks.");
+                    }
                 }
-                else
-                {
-                    config.AppSettings.Settings.Remove(scheduledJobModel.Job.JobId.ToString());
-                }
-                config.Save(ConfigurationSaveMode.Modified);
             }
 
             //Run now functionality
             if (e.ColumnIndex == jobsDataGridView.Columns["Run"].Index && e.RowIndex >= 0)
             {
                 scheduledJobModel.Job.ExceuteJob();
+            }
+
+            if (e.ColumnIndex == jobsDataGridView.Columns["LogFile"].Index && e.RowIndex >= 0)
+            {
+                string filepath = scheduledJobModel.Job.LogFilePath;
+                if (File.Exists(filepath))
+                {
+                    System.Diagnostics.Process.Start(filepath);
+                }
             }
 
             jobsDataGridView.Refresh();
@@ -376,36 +392,6 @@ namespace Syscon.JobSchedulerUI
             //var frm = new Settings();
             //frm.ShowDialog();
         }
-
-        private bool CheckJobSchedulerSvcRunning()
-        {
-            bool isRunning = false;
-
-            isRunning = (Process.GetProcessesByName("JobSchedulerService").Length == 1);
-
-            return isRunning;
-        }
-
-        private void btnStartService_Click(object sender, EventArgs e)
-        {
-            if (!CheckJobSchedulerSvcRunning())
-            {
-                //Start the service
-                Process svcProcess = new Process();
-                svcProcess.StartInfo.FileName = "sc.exe";
-                svcProcess.StartInfo.Arguments = "start JobSchedulerService";
-
-                if (svcProcess.Start())
-                {
-                    lblSvcStatus.Text = "Service Running";
-                    lblSvcStatus.ForeColor = Color.Blue;
-                }
-                else
-                {
-                    lblSvcStatus.Text = "Service not Running";
-                    lblSvcStatus.ForeColor = Color.Red;
-                }
-            }
-        }
+            
     }
 }

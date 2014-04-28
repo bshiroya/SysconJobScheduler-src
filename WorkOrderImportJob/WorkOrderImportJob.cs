@@ -8,14 +8,16 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
-using Sage.SMB.API;
-using Syscon.ScheduledJob;
+using System.Xml.Linq;
 
+using Sage.SMB.API;
+
+using Syscon.ScheduledJob;
 using SysconCommon;
+using SysconCommon.Algebras.DataTables;
 using SysconCommon.Common;
 using SysconCommon.Common.Environment;
 using SysconCommon.Parsing;
-using System.Xml.Linq;
 
 namespace Syscon.ScheduledJob.WorkOrderImportJob
 {
@@ -87,13 +89,14 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                     {
                         //Read all .csv files one by one, create the xml and send to Sage 100 using the Sage APIs
                         string fileNameWithoutPath = fileName.Substring(fileName.LastIndexOf('\\') + 1);
+                        bool partialSuccess = false;
 
                         //Log the filename in the log file
                         this.Log("Processing file - {0}", fileNameWithoutPath);
 
                         try
                         {
-                            DataTable dt = SysconCommon.Algebras.DataTables.DatatableExtensions.DataTableFromCSV("WorkOrders", fileName, true);
+                            DataTable dt = this.DataTableFromCSV("WorkOrders", fileName, true);
 
                             foreach (DataRow dr in dt.Rows)
                             {
@@ -125,6 +128,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                                     {
                                         this.Log("Failed to add record for Order Number - {0}", dr["OrderNumber"]);
                                         this.Log("Response Xml from Sage - \n {0}", iXMLOut);
+                                        partialSuccess = true;
                                     }
                                     else
                                     {
@@ -150,7 +154,15 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                                 }
                             }
 
-                            this.Log("The file - {0} has been processed successfully.", fileNameWithoutPath);
+                            if (partialSuccess)
+                            {
+                                this.Log("The import of file - {0} to Sage was partially successful. Please check the log file for failed entries.", fileNameWithoutPath);
+                                partialSuccess = false;
+                            }
+                            else
+                            {
+                                this.Log("The file - {0} has been processed successfully.", fileNameWithoutPath);
+                            }
 
                             //If file is successfully processed then move it into a child archive folder so that it is not processed again
                             this.MoveFileToProcessedFolder(fileName);
@@ -488,7 +500,75 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                 Directory.CreateDirectory(archivePath);
             }
             File.Move(fileName, archivePath + fileNameWithoutPath);
-            this.Log("The file - {0} moved to processed folder after successful import.", fileNameWithoutPath);
+            this.Log("The file - {0} moved to processed folder after import.", fileNameWithoutPath);
+        }
+
+        /// <summary>
+        /// Copied from SysconCommon and modified to exclude blank rows and column names in .csv files.
+        /// </summary>
+        /// <param name="tblName"></param>
+        /// <param name="csvFile"></param>
+        /// <param name="includesHeaders"></param>
+        /// <returns></returns>
+        private DataTable DataTableFromCSV(string tblName, string csvFile, bool includesHeaders)
+        {
+            List<string> allLines = new List<string>();
+            using (StreamReader sr = new StreamReader(csvFile))
+            {
+                string line = null;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (!string.IsNullOrEmpty(line.Trim(',')))
+                        allLines.Add(line);
+                }
+            }
+            var lines = allLines.ToArray();
+            var data = (from l in lines
+                        select l.Split(',')).ToArray();
+
+            if (data.Length == 0)
+                return null;
+
+            if (data[0].Length == 0)
+                return null;
+
+            foreach (var i in FunctionalOperators.Range(1, data.Length))
+            {
+                if (data[i].Length != data[0].Length)
+                    throw new InvalidOperationException("CSV File has inconsistent amount of fields in lines");
+            }
+
+            var headers = includesHeaders ? data[0] : null;
+            //Trim for empty header names and then trim the empty data rows
+            headers = headers.TakeWhile(s => !string.IsNullOrEmpty(s.TrimEnd(','))).ToArray();
+
+            var data2 = data;
+            foreach (var i in FunctionalOperators.Range(0, data.Length))
+            {
+                data2[i] = data[i].Take(headers.Length).ToArray();
+            }
+
+            if (includesHeaders)
+            {
+                data2 = data2.Tail().ToArray();
+            }
+
+            var dt = data2.MultArrayToDataTable(tblName);
+
+            if (headers != null)
+            {
+                foreach (var i in FunctionalOperators.Range(headers.Length))
+                {
+                    dt.Columns[i].ColumnName = headers[i];
+                }
+            }
+
+            data = null;
+            data2 = null;
+            allLines.Clear();
+            allLines = null;
+
+            return dt;
         }
 
         #endregion

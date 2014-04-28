@@ -45,9 +45,6 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.activateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jobListBindingSrc = new System.Windows.Forms.BindingSource(this.components);
-            this.lblSvc = new System.Windows.Forms.Label();
-            this.lblSvcStatus = new System.Windows.Forms.Label();
-            this.btnStartService = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.jobsDataGridView)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -70,14 +67,14 @@
             this.txtDataDir.Location = new System.Drawing.Point(6, 53);
             this.txtDataDir.Name = "txtDataDir";
             this.txtDataDir.ReadOnly = true;
-            this.txtDataDir.Size = new System.Drawing.Size(831, 20);
+            this.txtDataDir.Size = new System.Drawing.Size(845, 20);
             this.txtDataDir.TabIndex = 16;
             this.txtDataDir.TextChanged += new System.EventHandler(this.txtDataDir_TextChanged);
             // 
             // btnSMBDir
             // 
             this.btnSMBDir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSMBDir.Location = new System.Drawing.Point(843, 53);
+            this.btnSMBDir.Location = new System.Drawing.Point(857, 53);
             this.btnSMBDir.Name = "btnSMBDir";
             this.btnSMBDir.Size = new System.Drawing.Size(75, 23);
             this.btnSMBDir.TabIndex = 21;
@@ -90,9 +87,9 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.jobsDataGridView);
-            this.groupBox1.Location = new System.Drawing.Point(5, 124);
+            this.groupBox1.Location = new System.Drawing.Point(5, 91);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(916, 270);
+            this.groupBox1.Size = new System.Drawing.Size(930, 270);
             this.groupBox1.TabIndex = 23;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Scheduled Jobs";
@@ -109,7 +106,7 @@
             this.jobsDataGridView.Location = new System.Drawing.Point(3, 16);
             this.jobsDataGridView.MultiSelect = false;
             this.jobsDataGridView.Name = "jobsDataGridView";
-            this.jobsDataGridView.Size = new System.Drawing.Size(910, 251);
+            this.jobsDataGridView.Size = new System.Drawing.Size(924, 251);
             this.jobsDataGridView.TabIndex = 23;
             this.jobsDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.jobsDataGridView_CellClick);
             // 
@@ -187,42 +184,11 @@
             this.activateToolStripMenuItem.Text = "Activate";
             this.activateToolStripMenuItem.Click += new System.EventHandler(this.activateToolStripMenuItem_Click);
             // 
-            // lblSvc
-            // 
-            this.lblSvc.AutoSize = true;
-            this.lblSvc.Location = new System.Drawing.Point(12, 93);
-            this.lblSvc.Name = "lblSvc";
-            this.lblSvc.Size = new System.Drawing.Size(79, 13);
-            this.lblSvc.TabIndex = 25;
-            this.lblSvc.Text = "Service Status:";
-            // 
-            // lblSvcStatus
-            // 
-            this.lblSvcStatus.AutoSize = true;
-            this.lblSvcStatus.Location = new System.Drawing.Point(143, 94);
-            this.lblSvcStatus.Name = "lblSvcStatus";
-            this.lblSvcStatus.Size = new System.Drawing.Size(16, 13);
-            this.lblSvcStatus.TabIndex = 26;
-            this.lblSvcStatus.Text = "...";
-            // 
-            // btnStartService
-            // 
-            this.btnStartService.Location = new System.Drawing.Point(264, 91);
-            this.btnStartService.Name = "btnStartService";
-            this.btnStartService.Size = new System.Drawing.Size(83, 25);
-            this.btnStartService.TabIndex = 27;
-            this.btnStartService.Text = "Start Service";
-            this.btnStartService.UseVisualStyleBackColor = true;
-            this.btnStartService.Click += new System.EventHandler(this.btnStartService_Click);
-            // 
             // JobScheduler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(947, 409);
-            this.Controls.Add(this.btnStartService);
-            this.Controls.Add(this.lblSvcStatus);
-            this.Controls.Add(this.lblSvc);
+            this.ClientSize = new System.Drawing.Size(961, 368);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnSMBDir);
@@ -259,9 +225,6 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem activateToolStripMenuItem;
         private System.Windows.Forms.BindingSource jobListBindingSrc;
-        private System.Windows.Forms.Label lblSvc;
-        private System.Windows.Forms.Label lblSvcStatus;
-        private System.Windows.Forms.Button btnStartService;
 
     }
 }

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Job Scheduler")]
-[assembly: AssemblyDescription("Syscon Job Scheduler Application")]
+[assembly: AssemblyTitle("ScheduledJobRunner")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Syscon, Inc")]
-[assembly: AssemblyProduct("Job Scheduler")]
-[assembly: AssemblyCopyright("Copyright ©  2014 Syscon, Inc")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("ScheduledJobRunner")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("44fad11d-cfad-481d-9c29-b50886e78527")]
+[assembly: Guid("1a90a927-cfdb-4597-b34b-b3b64ad2a653")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.0.0")]
-[assembly: AssemblyFileVersion("1.3.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
