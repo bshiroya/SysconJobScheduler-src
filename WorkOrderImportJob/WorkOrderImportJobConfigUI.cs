@@ -13,24 +13,23 @@ using System.IO;
 namespace Syscon.ScheduledJob.WorkOrderImportJob
 {
     /// <summary>
-    /// 
+    /// Config UI for the work order import job
     /// </summary>
     public partial class WorkOrderImportJobConfigUI : Form
     {
         #region Member variables
-        private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
-        private WorkOrderImportJobConfig _jobConfig = null;
-        private XmlSerializer _xmlSerializer = null;
+        private WorkOrderImportJobConfig    _jobConfig = null;
+        private XmlSerializer               _xmlSerializer = null;
         #endregion
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="job"></param>
-        public WorkOrderImportJobConfigUI(IScheduledJob job)
+        public WorkOrderImportJobConfigUI()
         {
             InitializeComponent();
-            _jobConfig = new WorkOrderImportJobConfig(job);
+            _jobConfig = new WorkOrderImportJobConfig();
         }
 
         #region Event Handlers
@@ -46,7 +45,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             txtPwd.Text         = _jobConfig.Password;
             txtVerifyPwd.Text   = _jobConfig.Password;
             txtWOImportDir.Text = _jobConfig.WorkOrderQueueDirectory;
-            //scheduleTimePicker.Text = _jobConfig.ScheduledTime.ToString();
+            scheduleTimeLabel.Text = _jobConfig.ScheduledTime;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -72,7 +71,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             _jobConfig.Password = txtPwd.Text; //encrypt this before saving
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.WorkOrderQueueDirectory = txtWOImportDir.Text;
-            _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
+            _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
 
             //Save the config
             SaveConfig();

@@ -16,7 +16,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
     /// </summary>
     public class WorkOrderImportJobConfig : ScheduledJobConfig
     {
-        private WorkOrderImportJob _workOrderImportJob = null;
 
         /// <summary>
         /// Default Ctor
@@ -26,14 +25,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public WorkOrderImportJobConfig(IScheduledJob scheduledJob)
-            :base(scheduledJob)
-        {
-            _workOrderImportJob = scheduledJob as WorkOrderImportJob;
-        }
+        #region IScheduledJobConfig Members
 
         /// <summary>
         /// Load the config.
@@ -71,25 +63,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             }
         }
 
-        /// <summary>
-        /// User Id
-        /// </summary>
-        [XmlElement("UserId")]
-        public string UserId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// User Password
-        /// </summary>
-        [XmlElement("Password")]
-        public string Password
-        {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Work Order Import File Directory 
@@ -100,5 +73,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             get;
             set;
         }
+        #endregion
+
     }
 }

@@ -21,18 +21,21 @@ using Microsoft.Win32.TaskScheduler;
 
 namespace Syscon.JobSchedulerUI
 {
+    /// <summary>
+    /// Main UI window of JobScheduler application.
+    /// </summary>
     public partial class JobScheduler : Form
     {
         #region Member Variables
 
-        private CompositionContainer _container;
+        private SysconCommon.COMMethods _mbapi      = new SysconCommon.COMMethods();
+        private bool                    _loaded     = false;
 
-        private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
-        bool loaded = false;
+        private CompositionContainer _container     = null;
+        private IList<IScheduledJob> _scheduledJobs = new List<IScheduledJob>();
 
-        IList<IScheduledJob> _scheduledJobs = new List<IScheduledJob>();
-        private IDictionary<string, bool> _scheduledJobAndStatus = new Dictionary<string, bool>();
-
+        private const string SYSCON_TASK_FOLDER     = "Syscon";
+        private const string NOT_SET                = "Not Set";
         #endregion
 
         /// <summary>
@@ -49,13 +52,29 @@ namespace Syscon.JobSchedulerUI
                 //Load which jobs are already scheduled in the service.
                 foreach (IScheduledJob job in this.ScheduledJobs)
                 {
+                    job.JobConfig.LoadConfig();
+
                     string jobName = job.ToString().Substring(job.ToString().LastIndexOf('.') + 1);
                     string taskName = jobName + "-" + job.JobId.ToString();
 
-                    // Retrieve the task, change the trigger and re-register it
-                    Task t = ts.GetTask(taskName);
+                    TaskFolder sysconTaskFolder = GetTaskFolder(ts, SYSCON_TASK_FOLDER);
+                    Task t = null;
+
+                    // Retrieve the task
+                    if (sysconTaskFolder != null)
+                    {
+                        //Get from Syscon folder
+                        t = sysconTaskFolder.Tasks.FirstOrDefault(tt => tt.Name == taskName);
+                    }
+                    else
+                    {
+                        //get from Root folder
+                        t = ts.GetTask(taskName); 
+                    }
                     
-                    _scheduledJobAndStatus.Add(job.JobId.ToString(), (t != null));
+                    job.JobConfig.ScheduledTime     = (t!= null) ? t.Definition.Triggers[0].ToString(): NOT_SET;
+                    job.JobStatus                   = (t != null) ? (JobStatus)t.State : JobStatus.Disabled;
+                    job.Enqueued                    = (t != null);
                 }
             }
         }
@@ -116,10 +135,10 @@ namespace Syscon.JobSchedulerUI
             var product_version = "1.3.0.0";
             bool require_login = false;
 
-            if (!loaded)
+            if (!_loaded)
             {
                 require_login = true;
-                loaded = true;
+                _loaded = true;
                 this.Text += " (version " + Assembly.GetExecutingAssembly().GetName().Version.ToString() + ")";
             }
 
@@ -152,13 +171,13 @@ namespace Syscon.JobSchedulerUI
 
             if (require_login)
             {
-                mbapi.smartGetSMBDir();
+                _mbapi.smartGetSMBDir();
 
-                if (mbapi.RequireSMBLogin() == null)
+                if (_mbapi.RequireSMBLogin() == null)
                     this.Close();
             }
 
-            txtDataDir.Text = mbapi.smartGetSMBDir();
+            txtDataDir.Text = _mbapi.smartGetSMBDir();
         }
 
         private void txtDataDir_TextChanged(object sender, EventArgs e)
@@ -200,7 +219,7 @@ namespace Syscon.JobSchedulerUI
             desCol.DataPropertyName = "Desc";
             desCol.Name = "Desc";
             desCol.ReadOnly = true;
-            desCol.Width = 250;
+            desCol.Width = 220;
             jobsDataGridView.Columns.Add(desCol);
 
             DataGridViewColumn statusCol = new DataGridViewTextBoxColumn();
@@ -213,7 +232,7 @@ namespace Syscon.JobSchedulerUI
             timeCol.DataPropertyName = "ScheduledTime";
             timeCol.Name = "Time";
             timeCol.ReadOnly = true;
-            timeCol.Width = 80;
+            timeCol.Width = 160;
             jobsDataGridView.Columns.Add(timeCol);
 
             DataGridViewButtonColumn confiCol = new DataGridViewButtonColumn();
@@ -225,7 +244,7 @@ namespace Syscon.JobSchedulerUI
             DataGridViewCheckBoxColumn enueueCol = new DataGridViewCheckBoxColumn();
             enueueCol.DataPropertyName = "Enqueued";
             enueueCol.Name = "Enqueue";
-            enueueCol.Width = 70;
+            enueueCol.Width = 60;
             jobsDataGridView.Columns.Add(enueueCol);
 
             DataGridViewButtonColumn runJobCol = new DataGridViewButtonColumn();
@@ -242,18 +261,43 @@ namespace Syscon.JobSchedulerUI
             jobsDataGridView.Columns.Add(logFileCol);
 
             foreach (IScheduledJob job in _scheduledJobs)
-            {
-                if (_scheduledJobAndStatus.ContainsKey(job.JobId.ToString()))
-                {
-                    job.Enqueued = _scheduledJobAndStatus[job.JobId.ToString()];
-                }
-                
-                job.JobConfig.LoadConfig();
-
+            {               
                 ScheduledJobModel jobModel = new ScheduledJobModel(job);
                 jobListBindingSrc.Add(jobModel);
             }
-        }        
+        }
+
+        private TaskFolder CreateSysconScheduledTaskFolder(TaskService ts)
+        {
+            TaskFolder sysconTaskFolder = GetTaskFolder(ts, SYSCON_TASK_FOLDER);
+
+            if (sysconTaskFolder == null)
+            {
+                try
+                {
+                    sysconTaskFolder = ts.RootFolder.CreateFolder(SYSCON_TASK_FOLDER);
+                }
+                catch (NotV1SupportedException ex)
+                {
+                    Env.Log("Error creating schedule task folder." + ex.Message);
+                }
+            }
+            return sysconTaskFolder;
+        }
+
+        private TaskFolder GetTaskFolder(TaskService ts, string folderName)
+        {
+            TaskFolder sysconTaskFolder = null;
+            try
+            {
+                sysconTaskFolder = ts.GetFolder("Syscon");
+            }
+            catch (Exception ex)
+            {
+                Env.Log("Could not find the Syscon task scheduler folder. Trying to create one.");
+            }
+            return sysconTaskFolder;
+        }
 
         private void jobsDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -301,10 +345,23 @@ namespace Syscon.JobSchedulerUI
                             // Add an action that will launch the job runner application for the given job at the scheduled time.
                             td.Actions.Add(new ExecAction("ScheduledJobRunner.exe", scheduledJobModel.Job.JobId.ToString(), exeLocation));
 
-                            // Register the task in the root folder                        
-                            ts.RootFolder.RegisterTaskDefinition(taskName, td);
+                            //Try creating the Syscon folder
+                            TaskFolder sysconTaskFolder = CreateSysconScheduledTaskFolder(ts);
+                            if (sysconTaskFolder != null)
+                            {
+                                // Register the task in the Syscon folder                        
+                                sysconTaskFolder.RegisterTaskDefinition(taskName, td);
+                            }
+                            else
+                            {
+                                // Register the task in the root folder                        
+                                ts.RootFolder.RegisterTaskDefinition(taskName, td);
+                            }
                             scheduledJobModel.Enqueued = enqueued;
                             //cell.EditingCellFormattedValue = true;
+
+                            scheduledJobModel.ScheduledTime = td.Triggers[0].ToString();
+                            scheduledJobModel.JobStatus = JobStatus.Ready;
 
                             MessageBox.Show("Job successfully added to the Windows scheduled tasks.");
                         }
@@ -316,11 +373,27 @@ namespace Syscon.JobSchedulerUI
                     }
                     else
                     {
-                        Task t = ts.GetTask(taskName);
+                        Task t = null;
 
-                        // Remove the task.
-                        ts.RootFolder.DeleteTask(taskName, false);
+                        TaskFolder sysconTaskFolder = GetTaskFolder(ts, SYSCON_TASK_FOLDER);
+                        if (sysconTaskFolder != null)
+                        {
+                            //Get from Syscon folder
+                            t = sysconTaskFolder.Tasks.FirstOrDefault(tt => tt.Name == taskName);
+
+                            //Remove the task from Syscon folder
+                            sysconTaskFolder.DeleteTask(taskName, false);
+                        }
+                        else
+                        {
+                            t = ts.GetTask(taskName);
+
+                            //Remove the task from Root folder
+                            ts.RootFolder.DeleteTask(taskName, false);
+                        }
                         scheduledJobModel.Enqueued = false;
+                        scheduledJobModel.ScheduledTime = NOT_SET;
+                        scheduledJobModel.JobStatus = JobStatus.Disabled;
                         //cell.EditingCellFormattedValue = false;
 
                         if (t != null)
@@ -349,11 +422,11 @@ namespace Syscon.JobSchedulerUI
 
         private void btnSMBDir_Click(object sender, EventArgs e)
         {
-            mbapi.smartSelectSMBDirByGUI();
-            var usr = mbapi.RequireSMBLogin();
+            _mbapi.smartSelectSMBDirByGUI();
+            var usr = _mbapi.RequireSMBLogin();
             if (usr != null)
             {
-                txtDataDir.Text = mbapi.smartGetSMBDir();
+                txtDataDir.Text = _mbapi.smartGetSMBDir();
             }
         }
 
@@ -364,7 +437,6 @@ namespace Syscon.JobSchedulerUI
             this.Close();
         }
 
-        #endregion       
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -392,6 +464,7 @@ namespace Syscon.JobSchedulerUI
             //var frm = new Settings();
             //frm.ShowDialog();
         }
-            
+        #endregion
+
     }
 }

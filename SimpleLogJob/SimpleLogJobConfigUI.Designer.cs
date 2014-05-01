@@ -34,7 +34,6 @@
             this.bottomPanel = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOk = new System.Windows.Forms.Button();
-            this.scheduleTimePicker = new System.Windows.Forms.DateTimePicker();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.btnLogFile = new System.Windows.Forms.Button();
             this.txtLogFilePath = new System.Windows.Forms.TextBox();
@@ -46,6 +45,7 @@
             this.txtUserName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.scheduleTimeLabel = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -110,16 +110,6 @@
             this.btnOk.Text = "&Ok";
             this.btnOk.UseVisualStyleBackColor = true;
             this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
-            // 
-            // scheduleTimePicker
-            // 
-            this.scheduleTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.scheduleTimePicker.Location = new System.Drawing.Point(132, 147);
-            this.scheduleTimePicker.Name = "scheduleTimePicker";
-            this.scheduleTimePicker.ShowCheckBox = true;
-            this.scheduleTimePicker.ShowUpDown = true;
-            this.scheduleTimePicker.Size = new System.Drawing.Size(118, 20);
-            this.scheduleTimePicker.TabIndex = 30;
             // 
             // btnLogFile
             // 
@@ -199,11 +189,21 @@
             this.label2.TabIndex = 45;
             this.label2.Text = "User Id";
             // 
+            // scheduleTimeLabel
+            // 
+            this.scheduleTimeLabel.AutoSize = true;
+            this.scheduleTimeLabel.Location = new System.Drawing.Point(129, 147);
+            this.scheduleTimeLabel.Name = "scheduleTimeLabel";
+            this.scheduleTimeLabel.Size = new System.Drawing.Size(43, 13);
+            this.scheduleTimeLabel.TabIndex = 51;
+            this.scheduleTimeLabel.Text = "Not Set";
+            // 
             // SimpleLogJobConfigUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(607, 247);
+            this.Controls.Add(this.scheduleTimeLabel);
             this.Controls.Add(this.txtVerifyPwd);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtPwd);
@@ -213,7 +213,6 @@
             this.Controls.Add(this.btnLogFile);
             this.Controls.Add(this.txtLogFilePath);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.scheduleTimePicker);
             this.Controls.Add(this.bottomPanel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnSMBDir);
@@ -236,7 +235,6 @@
         private System.Windows.Forms.Panel bottomPanel;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOk;
-        private System.Windows.Forms.DateTimePicker scheduleTimePicker;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button btnLogFile;
         private System.Windows.Forms.TextBox txtLogFilePath;
@@ -248,5 +246,6 @@
         private System.Windows.Forms.TextBox txtUserName;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label scheduleTimeLabel;
     }
 }

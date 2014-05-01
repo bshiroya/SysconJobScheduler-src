@@ -26,22 +26,21 @@ namespace Syscon.ScheduledJob.SimpleLogJob
     /// Implementation for a simple log job.
     /// </summary>
     [Export(typeof(IScheduledJob))]    
-    [DataContract]
-    public class SimpleLogJob : IScheduledJob
+    public class SimpleLogJob : ScheduledJob
     {
-        SimpleLogJobConfig _jobConfig = null;
-        SimpleLogJobConfigUI configUI = null;
+        #region Member Variables
+        private SimpleLogJobConfigUI _configUI      = null;
+        private COMMethods           _methods       = null;
 
-        DateTime _scheduledTime;
-        COMMethods _methods = null;
+        #endregion
 
         /// <summary>
         /// Ctor
         /// </summary>
-        public SimpleLogJob()
+        public SimpleLogJob() : base()
         {
-            _jobConfig = new SimpleLogJobConfig(this);
-            configUI = new SimpleLogJobConfigUI(this);
+            _jobConfig = new SimpleLogJobConfig();
+            _configUI = new SimpleLogJobConfigUI();
 
             _methods = new COMMethods();
 
@@ -53,7 +52,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         /// Execute the instructions for this job.
         /// </summary>
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
-        public void ExceuteJob()
+        public override void ExceuteJob()
         {
             this.Log("Starting log job execution");
             _jobConfig.LoadConfig();
@@ -85,9 +84,9 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         /// <summary>
         /// Set the configuration settings for the job.
         /// </summary>
-        public void SetJobConfiguration()
+        public override void SetJobConfiguration()
         {
-            if (configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (_configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 _jobConfig.LoadConfig();
             }
@@ -96,97 +95,34 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         #region Properties
 
         /// <summary>
-        /// 
-        /// </summary>
-        public IScheduledJobConfig JobConfig
-        {
-            get { return _jobConfig; }
-        }
-
-        /// <summary>
-        /// The time scheduled to run this job.
-        /// </summary>
-        public DateTime ScheduledTime
-        {
-            get { return _scheduledTime; }
-            set { _scheduledTime = value; }
-        }
-
-        /// <summary>
-        /// The unique Guid of this job for identification.
-        /// </summary>
-        public Guid JobId
-        {
-            get { return GetAssemblyGuid(); }
-        }
-
-        /// <summary>
         /// Job Desctription
         /// </summary>
-        public string JobDesc
+        public override string JobDesc
         {
             get { return "Simple Log Job"; }
-        }
+        }      
 
-        /// <summary>
-        /// The job status.
-        /// </summary>
-        [DataMember]
-        public JobStatus JobStatus
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The config file path for this job.
-        /// </summary>
-        public string ConfigFilePath
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Name + ".xml"; }
-        }        
-        
         /// <summary>
         /// The log file path for this job.
         /// </summary>
-        public string LogFilePath
+        public override string LogFilePath
         {
-            get 
+            get
             {
                 return _jobConfig.LogFilePath;
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether this job is enqueued to the scheduler of not.
-        /// </summary>
-        public bool Enqueued
-        {
-            get;
-            set;
-        }
-
         #endregion
 
-        #region Private Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private Guid GetAssemblyGuid()
-        {
-            Assembly asm = Assembly.GetExecutingAssembly();
-            var attr = (GuidAttribute)asm.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            return new Guid(attr.Value);
-        }
+        #region Private/Protected Methods
 
         /// <summary>
         /// Log a message to LogFile, the format is the same as string.Format
         /// </summary>
         /// <param name="msgFormat"></param>
         /// <param name="arguments"></param>
-        private void Log(string msgFormat, params object[] arguments)
+        protected override void Log(string msgFormat, params object[] arguments)
         {
             try
             {

@@ -15,15 +15,86 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 {
     public partial class SimpleLogJobConfigUI : Form
     {
-        SimpleLogJobConfig _jobConfig = null;
+        #region Member Variables
+        private SimpleLogJobConfig  _jobConfig      = null;
+        private XmlSerializer       _xmlSerializer  = null;
 
-        public SimpleLogJobConfigUI(IScheduledJob job )
+        #endregion
+
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        public SimpleLogJobConfigUI()
         {
             InitializeComponent();
-            _jobConfig = new SimpleLogJobConfig(job);
+            _jobConfig = new SimpleLogJobConfig();
         }
 
+        #region Public Methods
+
+        /// <summary>
+        /// Save the job config
+        /// </summary>
+        public virtual void SaveConfig()
+        {
+            try
+            {
+                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
+
+                using (StreamWriter writer = new StreamWriter(string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName), false))
+                {
+                    _xmlSerializer.Serialize(writer, _jobConfig);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+
+            }
+            finally
+            {
+                _xmlSerializer = null;
+            }
+        }
+
+        /// <summary>
+        /// Load the job configuration.
+        /// </summary>
+        public virtual void LoadConfig()
+        {
+            try
+            {
+                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
+                string configFile = string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName);
+
+                if (File.Exists(configFile))
+                {
+                    using (FileStream stream = new FileInfo(configFile).OpenRead())
+                    {
+                        var dsObj = _xmlSerializer.Deserialize(stream);
+                        SimpleLogJobConfig tempConfig = dsObj as SimpleLogJobConfig;
+
+                        _jobConfig.SMBDir = tempConfig.SMBDir;
+                        _jobConfig.UserId = tempConfig.UserId;
+                        _jobConfig.Password = tempConfig.Password;
+                        _jobConfig.LogFilePath = tempConfig.LogFilePath;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+            }
+            finally
+            {
+                _xmlSerializer = null;
+            }
+        }
+
+        #endregion
+
         #region Event Handlers
+
         private void SimpleLogJobConfigUI_Load(object sender, EventArgs e)
         {
             //Load the config
@@ -60,14 +131,12 @@ namespace Syscon.ScheduledJob.SimpleLogJob
             {
                 MessageBox.Show("Please set a valid log file path.", "Select Log File", MessageBoxButtons.OK);
                 return;
-            }
-
-            
+            }            
 
             _jobConfig.SMBDir = txtSMBDir.Text;
             _jobConfig.UserId = txtUserName.Text;
             _jobConfig.Password = txtPwd.Text;
-            _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
+            _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
             _jobConfig.LogFilePath = txtLogFilePath.Text;
 
             //Save the config
@@ -80,68 +149,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         {
             this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
-        }
-        #endregion
-
-
-        XmlSerializer _xmlSerializer = null;
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual void SaveConfig()
-        {
-            try
-            {
-                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
-
-                using (StreamWriter writer = new StreamWriter(string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName), false))
-                {
-                    _xmlSerializer.Serialize(writer, _jobConfig);
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log exception
-
-            }
-            finally
-            {
-                _xmlSerializer = null;
-            }
-        }
-
-        /// <summary>
-        /// Load the settings from config file.
-        /// </summary>
-        public virtual void LoadConfig()
-        {
-            try
-            {
-                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
-                string configFile = string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName);
-
-                if (File.Exists(configFile))
-                {
-                    using (FileStream stream = new FileInfo(configFile).OpenRead())
-                    {
-                        var dsObj = _xmlSerializer.Deserialize(stream);
-                        SimpleLogJobConfig tempConfig = dsObj as SimpleLogJobConfig;
-
-                        _jobConfig.SMBDir = tempConfig.SMBDir;
-                        _jobConfig.UserId = tempConfig.UserId;
-                        _jobConfig.Password = tempConfig.Password;
-                        _jobConfig.LogFilePath = tempConfig.LogFilePath;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log exception
-            }
-            finally
-            {
-                _xmlSerializer = null;
-            }
         }
 
         private void btnSMBDir_Click(object sender, EventArgs e)
@@ -163,5 +170,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
             }
         }
 
+        #endregion
     }
 }

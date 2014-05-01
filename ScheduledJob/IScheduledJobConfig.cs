@@ -20,18 +20,31 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
-        /// The time scheduled to run this job.
+        /// SMB database user id
         /// </summary>
-        DateTime ScheduledTime
+         string UserId
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Reference of ScheduledJob object
+         /// SMB database user password
         /// </summary>
-        IScheduledJob ScheduledJob { get; }
+        string Password
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// The time scheduled to run this job.
+        /// </summary>
+        string ScheduledTime
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Assembly name

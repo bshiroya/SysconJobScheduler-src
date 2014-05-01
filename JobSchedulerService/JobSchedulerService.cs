@@ -89,7 +89,7 @@ namespace Syscon.Services
 
             foreach (IScheduledJob job in _scheduled_Jobs.Values)
             {
-                appSection.Settings.Add(job.JobId.ToString(), job.ScheduledTime.ToShortTimeString());
+                appSection.Settings.Add(job.JobId.ToString(), job.ScheduledTime;
             }
             config.Save(ConfigurationSaveMode.Modified);
         }

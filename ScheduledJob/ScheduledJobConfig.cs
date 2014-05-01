@@ -10,39 +10,21 @@ using System.IO;
 namespace Syscon.ScheduledJob
 {
     /// <summary>
-    /// 
+    /// Base class for schedule job config
     /// </summary>
     public abstract class ScheduledJobConfig: IScheduledJobConfig
     {
         private XmlSerializer _xmlSerializer;
-        protected IScheduledJob _scheduledJob = null;
-        protected DateTime _scheduledTime;
+        protected string _scheduledTime;
 
         /// <summary>
         /// Default Ctor
         /// </summary>
         public ScheduledJobConfig()
         {
-
-        }
-
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public ScheduledJobConfig(IScheduledJob scheduledJob)
-        {
-            _scheduledJob = scheduledJob;
         }
 
         #region IScheduledJobConfig Members
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public IScheduledJob ScheduledJob
-        {
-            get { return _scheduledJob; }
-        }
 
         /// <summary>
         /// SMB Directory
@@ -55,14 +37,34 @@ namespace Syscon.ScheduledJob
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        [XmlElement("UserId")]
+        public string UserId
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlElement("Password")]
+        public string Password
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// The time scheduled to run this job.
         /// </summary>
         [XmlElement(ElementName="ScheduledTime")]
-        public DateTime ScheduledTime
+        public string ScheduledTime
         {
             get
             {
-                return _scheduledTime;
+                return string.IsNullOrEmpty(_scheduledTime) ? "Not Set" : _scheduledTime;
             }
             set
             {

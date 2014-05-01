@@ -15,8 +15,6 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
     /// </summary>
     public class ExportBillingUpdatesJobConfig : ScheduledJobConfig
     {
-        private ExportBillingUpdatesJob _exportBillingUpdatesJob = null;        
-
         /// <summary>
         /// Default Ctor
         /// </summary>
@@ -25,16 +23,9 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         {
         }
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        public ExportBillingUpdatesJobConfig(IScheduledJob scheduledJob)
-            :base(scheduledJob)
-        {
-            _exportBillingUpdatesJob = scheduledJob as ExportBillingUpdatesJob;
-        }
+        #region IScheduledJobConfig Members
 
-                /// <summary>
+        /// <summary>
         /// Load the config.
         /// </summary>
         public override void LoadConfig()
@@ -71,26 +62,6 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         }
 
         /// <summary>
-        /// User Id.
-        /// </summary>
-        [XmlElement("UserId")]
-        public string UserId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// User password
-        /// </summary>
-        [XmlElement("Password")]
-        public string Password
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Billing Update Export File Directory 
         /// </summary>
         [XmlElement("BillingUpdateQueueDir")]
@@ -99,5 +70,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
             get;
             set;
         }
+
+        #endregion
     }
 }

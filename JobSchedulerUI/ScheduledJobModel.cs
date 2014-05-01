@@ -51,6 +51,10 @@ namespace Syscon.JobSchedulerUI
             {
                 return Job.JobStatus;
             }
+            set
+            {
+                Job.JobStatus = value;
+            }
         }
        
         /// <summary>
@@ -71,7 +75,12 @@ namespace Syscon.JobSchedulerUI
         {
             get
             {
-                return Job.JobConfig.ScheduledTime.ToShortTimeString();
+                return Job.JobConfig.ScheduledTime;
+            }
+
+            internal set
+            {
+                Job.ScheduledTime = Job.JobConfig.ScheduledTime = value;
             }
         }
 

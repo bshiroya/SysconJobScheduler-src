@@ -22,14 +22,11 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
     /// Implementation of the billing status update job.
     /// </summary>
     [Export(typeof(IScheduledJob))] 
-    public class ExportBillingUpdatesJob : IScheduledJob
+    public class ExportBillingUpdatesJob : ScheduledJob
     {
         #region Member variables
-        private ExportBillingUpdatesJobConfig _jobConfig = null;
-        private ExportBillingUpdatesJobConfigUI _configUI = null;
-        private DateTime _scheduledTime;
-
-        COMMethods _methods = null;
+        private ExportBillingUpdatesJobConfigUI _configUI   = null;
+        private COMMethods                      _methods    = null;
 
         #endregion
 
@@ -38,8 +35,8 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         /// </summary>
         public ExportBillingUpdatesJob()
         {
-            _jobConfig = new ExportBillingUpdatesJobConfig(this);
-            _configUI = new ExportBillingUpdatesJobConfigUI(this);
+            _jobConfig = new ExportBillingUpdatesJobConfig();
+            _configUI = new ExportBillingUpdatesJobConfigUI();
 
             _methods = new COMMethods();
         }
@@ -48,7 +45,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         /// Execute the instructions for this job.
         /// </summary>
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
-        public void ExceuteJob()
+        public override void ExceuteJob()
         {
             _jobConfig.LoadConfig();
 
@@ -56,7 +53,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
             
             SysconCommon.Common.Environment.Connections.SetOLEDBFreeTableDirectory(_jobConfig.SMBDir);
 
-            string currentFilePath = _jobConfig.BillingUpdateQueueDirectory;
+            string currentFilePath = (_jobConfig as ExportBillingUpdatesJobConfig).BillingUpdateQueueDirectory;
             using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
                 using (Env.TempDBFPointer
@@ -83,7 +80,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                     if (dt.Rows.Count > 0)
                     {
                         //Get unique file name
-                        string csvFile = GetUniqueFileName(_jobConfig.BillingUpdateQueueDirectory);
+                        string csvFile = GetUniqueFileName(currentFilePath);
 
                         //Put the data to the .csv file
                         DataView view = new DataView(dt);
@@ -115,7 +112,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         /// <summary>
         /// Set the configuration settings for the job.
         /// </summary>
-        public void SetJobConfiguration()
+        public override void SetJobConfiguration()
         {
             if (_configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -126,70 +123,19 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         #region Properties
 
         /// <summary>
-        /// 
-        /// </summary>
-        public IScheduledJobConfig JobConfig
-        {
-            get { return _jobConfig; }
-        }
-
-        /// <summary>
-        /// The time scheduled to run this job.
-        /// </summary>
-        public DateTime ScheduledTime
-        {
-            get { return _jobConfig.ScheduledTime; }
-            set { _scheduledTime = value; }
-        }
-
-        /// <summary>
-        /// The unique Guid of this job for identification.
-        /// </summary>
-        public Guid JobId
-        {
-            get { return GetAssemblyGuid(); }
-        }
-
-        /// <summary>
         /// Job Desctription
         /// </summary>
-        public string JobDesc
+        public override string JobDesc
         {
             get { return "Job for exporting billing updates to csv file"; }
         }
 
         /// <summary>
-        /// The job status.
-        /// </summary>
-        public JobStatus JobStatus
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The config file path for this job.
-        /// </summary>
-        public string ConfigFilePath
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Name + ".xml"; }
-        }
-
-        /// <summary>
         /// The log file path for this job.
         /// </summary>
-        public string LogFilePath
+        public override string LogFilePath
         {
             get { return _jobConfig.LogFilePath; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether this job is enqueued to the scheduler of not.
-        /// </summary>
-        public bool Enqueued
-        {
-            get;
-            set;
         }
 
         #endregion
@@ -197,22 +143,11 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         #region Private Methods
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private Guid GetAssemblyGuid()
-        {
-            Assembly asm = Assembly.GetExecutingAssembly();
-            var attr = (GuidAttribute)asm.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            return new Guid(attr.Value);
-        }
-
-        /// <summary>
         /// Log a message to LogFile, the format is the same as string.Format
         /// </summary>
         /// <param name="msgFormat"></param>
         /// <param name="arguments"></param>
-        private void Log(string msgFormat, params object[] arguments)
+        protected override void Log(string msgFormat, params object[] arguments)
         {
             try
             {
@@ -225,7 +160,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         }
 
         /// <summary>
-        /// 
+        /// This methods returns a unique csv file name in a given folder.
         /// </summary>
         /// <param name="queueDir"></param>
         /// <returns></returns>

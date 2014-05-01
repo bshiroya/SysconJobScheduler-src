@@ -85,7 +85,7 @@ namespace Syscon.ScheduledJob
         /// <summary>
         /// The time scheduled to run this job.
         /// </summary>
-        DateTime ScheduledTime
+        string ScheduledTime
         {
             get;
             set;

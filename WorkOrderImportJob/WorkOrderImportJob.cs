@@ -25,35 +25,37 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
     /// Implementation of the work order import job.
     /// </summary>
     [Export(typeof(IScheduledJob))]    
-    public class WorkOrderImportJob : IScheduledJob
+    public class WorkOrderImportJob : ScheduledJob
     {
         #region Member variables
-        private WorkOrderImportJobConfig    _jobConfig = null;
         private WorkOrderImportJobConfigUI  _configUI   = null;
-        private DateTime                    _scheduledTime;
 
         // Create instance of sage API
         private IMBXML _iXML = null;
-        COMMethods _methods = null;
+        private COMMethods _methods = null;
         #endregion
 
         /// <summary>
         /// Ctor
         /// </summary>
-        public WorkOrderImportJob()
+        public WorkOrderImportJob(): base()
         {
-            _jobConfig = new WorkOrderImportJobConfig(this);
-            _configUI = new WorkOrderImportJobConfigUI(this);
+            _jobConfig = new WorkOrderImportJobConfig();
+            _configUI = new WorkOrderImportJobConfigUI();
 
             _iXML = new IMBXML();
             _methods = new COMMethods();
         }
 
+        #region IScheduledJob Members
+
+        #region Methods
+
         /// <summary>
         /// Execute the instructions for this job.
         /// </summary>
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
-        public void ExceuteJob()
+        public override void ExceuteJob()
         {
             this.Log("Started execution of work order import job.");
 
@@ -80,7 +82,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                     return;
                 }
 
-                string currentFilePath = _jobConfig.WorkOrderQueueDirectory;
+                string currentFilePath = (_jobConfig as WorkOrderImportJobConfig).WorkOrderQueueDirectory;
                 string[] files = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
 
                 try
@@ -191,6 +193,66 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         }
 
         /// <summary>
+        /// Set the configuration settings for the job.
+        /// </summary>
+        public override void SetJobConfiguration()
+        {
+            if (_configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _jobConfig.LoadConfig();
+            }
+        }
+
+        #endregion
+
+
+        #region Properties
+
+        /// <summary>
+        /// Job Desctription
+        /// </summary>
+        public override string JobDesc
+        {
+            get { return "Job for importing work orders"; }
+        }
+
+        /// <summary>
+        /// The log file path for this job.
+        /// </summary>
+        public override string LogFilePath
+        {
+            get { return _jobConfig.LogFilePath; }
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Protected Methods
+
+        /// <summary>
+        /// Log a message to LogFile, the format is the same as string.Format
+        /// </summary>
+        /// <param name="msgFormat"></param>
+        /// <param name="arguments"></param>
+        protected override void Log(string msgFormat, params object[] arguments)
+        {
+            try
+            {
+                File.AppendAllText(LogFilePath, string.Format(DateTime.Now.ToString() + " - " + msgFormat + "\r\n", arguments));
+            }
+            catch
+            {
+                Env.Log("Error writing work order import job log file");
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
         /// This method initializes Sage APIs
         /// </summary>
         /// <param name="iXML"></param>
@@ -223,118 +285,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             }
 
             return true;
-        }                
-
-        /// <summary>
-        /// Set the configuration settings for the job.
-        /// </summary>
-        public void SetJobConfiguration()
-        {
-            if (_configUI.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                _jobConfig.LoadConfig();
-            }
-        }
-
-        #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public IScheduledJobConfig JobConfig
-        {
-            get { return _jobConfig; }
-        }
-
-        /// <summary>
-        /// The time scheduled to run this job.
-        /// </summary>
-        public DateTime ScheduledTime
-        {
-            get { return _scheduledTime; }
-            set { _scheduledTime = value; }
-        }
-
-        /// <summary>
-        /// The unique Guid of this job for identification.
-        /// </summary>
-        public Guid JobId
-        {
-            get { return GetAssemblyGuid(); }
-        }
-
-        /// <summary>
-        /// Job Desctription
-        /// </summary>
-        public string JobDesc
-        {
-            get { return "Job for importing work orders"; }
-        }
-
-        /// <summary>
-        /// The job status.
-        /// </summary>
-        public JobStatus JobStatus
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// The config file path for this job.
-        /// </summary>
-        public string ConfigFilePath
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Name + ".xml"; }
-        }
-
-        /// <summary>
-        /// The log file path for this job.
-        /// </summary>
-        public string LogFilePath
-        {
-            get { return _jobConfig.LogFilePath; }
-        }
-
-        /// <summary>
-        /// Gets or sets whether this job is enqueued to the scheduler of not.
-        /// </summary>
-        public bool Enqueued
-        {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private Guid GetAssemblyGuid()
-        {
-            Assembly asm = Assembly.GetExecutingAssembly();
-            var attr = (GuidAttribute)asm.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            return new Guid(attr.Value);
-        }        
-
-        /// <summary>
-        /// Log a message to LogFile, the format is the same as string.Format
-        /// </summary>
-        /// <param name="msgFormat"></param>
-        /// <param name="arguments"></param>
-        private void Log(string msgFormat, params object[] arguments)
-        {
-            try
-            {
-                File.AppendAllText(LogFilePath, string.Format(DateTime.Now.ToString() + " - " + msgFormat + "\r\n", arguments));
-            }
-            catch
-            {
-                Env.Log("Error writing work order import job log file");
-            }
         }
 
         /// <summary>

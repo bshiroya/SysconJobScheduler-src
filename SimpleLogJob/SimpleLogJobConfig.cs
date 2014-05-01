@@ -15,8 +15,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
     /// </summary>
     public class SimpleLogJobConfig : ScheduledJobConfig
     {
-        private SimpleLogJob _simpleLogJob = null;
-
 
         /// <summary>
         /// Default Ctor
@@ -27,35 +25,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public SimpleLogJobConfig(IScheduledJob scheduledJob)
-            :base(scheduledJob)
-        {
-            _simpleLogJob = scheduledJob as SimpleLogJob;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("UserId")]
-        public string UserId
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("Password")]
-        public string Password
-        {
-            get;
-            set;
-        }
+        #region IScheduleJobConfig Members
 
         /// <summary>
         /// Load config
@@ -91,6 +61,8 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                 _xmlSerializer = null;
             }
         }
+
+        #endregion
 
     }
 }

@@ -15,28 +15,90 @@ using Syscon.ScheduledJob;
 namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 {
     /// <summary>
-    /// 
+    /// Job settings UI for Export Billing Updates job
     /// </summary>
     public partial class ExportBillingUpdatesJobConfigUI : Form
     {
         #region Member variables
-        private SysconCommon.COMMethods mbapi = new SysconCommon.COMMethods();
-        private ExportBillingUpdatesJobConfig _jobConfig = null;
-        private XmlSerializer _xmlSerializer = null;
-        //COMMethods _methods;
+        private ExportBillingUpdatesJobConfig   _jobConfig = null;
+        private XmlSerializer                   _xmlSerializer = null;
         #endregion
 
         /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="job"></param>
-        public ExportBillingUpdatesJobConfigUI(IScheduledJob job)
+        public ExportBillingUpdatesJobConfigUI()
         {
             InitializeComponent();
-            _jobConfig = new ExportBillingUpdatesJobConfig(job);
-            //_methods = new COMMethods();
+            _jobConfig = new ExportBillingUpdatesJobConfig();
+
             LoadConfig();
         }
+
+        #region Public Methods
+
+        /// <summary>
+        /// Save the job config
+        /// </summary>
+        public virtual void SaveConfig()
+        {
+            try
+            {
+                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
+
+                using (StreamWriter writer = new StreamWriter(string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName), false))
+                {
+                    _xmlSerializer.Serialize(writer, _jobConfig);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+
+            }
+            finally
+            {
+                _xmlSerializer = null;
+            }
+        }
+
+        /// <summary>
+        /// Load the job configuration
+        /// </summary>
+        public void LoadConfig()
+        {
+            try
+            {
+                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
+                string configFile = string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName);
+
+                if (File.Exists(configFile))
+                {
+                    using (FileStream stream = new FileInfo(configFile).OpenRead())
+                    {
+                        var dsObj = _xmlSerializer.Deserialize(stream);
+                        ExportBillingUpdatesJobConfig tempConfig = dsObj as ExportBillingUpdatesJobConfig;
+
+                        _jobConfig.SMBDir = tempConfig.SMBDir;
+                        _jobConfig.UserId = tempConfig.UserId;
+                        _jobConfig.Password = tempConfig.Password; //decrypt this
+                        _jobConfig.LogFilePath = tempConfig.LogFilePath;
+                        _jobConfig.BillingUpdateQueueDirectory = tempConfig.BillingUpdateQueueDirectory;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log exception
+            }
+            finally
+            {
+                _xmlSerializer = null;
+            }
+        }
+
+        #endregion
 
         #region Event Handlers
         private void WorkOrderImportJobConfigUI_Load(object sender, EventArgs e)
@@ -78,7 +140,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
             _jobConfig.Password = txtPwd.Text;// _methods.smartEncrypt(txtPwd.Text, false); //encrypt this before saving
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.BillingUpdateQueueDirectory = txtBillUpdatesExportDir.Text;
-            _jobConfig.ScheduledTime = DateTime.Parse(scheduleTimePicker.Text);
+            _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
 
             //Save the config
             SaveConfig();
@@ -90,68 +152,6 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         {
             this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
-        }
-        #endregion
-
-
-        /// <summary>
-        /// Save the config
-        /// </summary>
-        public virtual void SaveConfig()
-        {
-            try
-            {
-                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
-
-                using (StreamWriter writer = new StreamWriter(string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName), false))
-                {
-                    _xmlSerializer.Serialize(writer, _jobConfig);
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log exception
-
-            }
-            finally
-            {
-                _xmlSerializer = null;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void LoadConfig()
-        {
-            try
-            {
-                _xmlSerializer = new XmlSerializer(_jobConfig.GetType());
-                string configFile = string.Format(@"{0}\{1}.xml", _jobConfig.AssemblyPath, _jobConfig.AssemblyName);
-
-                if (File.Exists(configFile))
-                {
-                    using (FileStream stream = new FileInfo(configFile).OpenRead())
-                    {
-                        var dsObj = _xmlSerializer.Deserialize(stream);
-                        ExportBillingUpdatesJobConfig tempConfig = dsObj as ExportBillingUpdatesJobConfig;
-
-                        _jobConfig.SMBDir = tempConfig.SMBDir;
-                        _jobConfig.UserId = tempConfig.UserId;
-                        _jobConfig.Password = tempConfig.Password; //decrypt this
-                        _jobConfig.LogFilePath = tempConfig.LogFilePath;
-                        _jobConfig.BillingUpdateQueueDirectory = tempConfig.BillingUpdateQueueDirectory;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //Log exception
-            }
-            finally
-            {
-                _xmlSerializer = null;
-            }
         }
 
         private void btnSMBDir_Click(object sender, EventArgs e)
@@ -180,6 +180,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                 txtLogFilePath.Text = saveFileDialog1.FileName;
             }
         }
-
+        #endregion
+        
     }
 }

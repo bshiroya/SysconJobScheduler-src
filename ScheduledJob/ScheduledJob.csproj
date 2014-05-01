@@ -49,6 +49,7 @@
     <Compile Include="IScheduledJob.cs" />
     <Compile Include="IScheduledJobConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledJob.cs" />
     <Compile Include="ScheduledJobConfig.cs" />
     <Compile Include="TimeSetControl.cs">
       <SubType>UserControl</SubType>
