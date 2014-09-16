@@ -85,6 +85,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
                         _jobConfig.Password = tempConfig.Password; //decrypt this
                         _jobConfig.LogFilePath = tempConfig.LogFilePath;
                         _jobConfig.BillingUpdateQueueDirectory = tempConfig.BillingUpdateQueueDirectory;
+                        _jobConfig.ScheduledTime = tempConfig.ScheduledTime;
                     }
                 }
             }

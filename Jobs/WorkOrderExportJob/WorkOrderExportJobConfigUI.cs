@@ -10,7 +10,7 @@ using Syscon.ScheduledJob;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Syscon.ScheduledJob.WorkOrderImportJob
+namespace Syscon.ScheduledJob.WorkOrderExportJob
 {
     /// <summary>
     /// Config UI for the work order import job
@@ -18,7 +18,7 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
     public partial class WorkOrderImportJobConfigUI : Form
     {
         #region Member variables
-        private WorkOrderImportJobConfig    _jobConfig = null;
+        private WorkOrderExportJobConfig    _jobConfig = null;
         private XmlSerializer               _xmlSerializer = null;
         #endregion
 
@@ -29,7 +29,8 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         public WorkOrderImportJobConfigUI()
         {
             InitializeComponent();
-            _jobConfig = new WorkOrderImportJobConfig();
+            _jobConfig = new WorkOrderExportJobConfig();
+            _jobConfig.LookBackPeriod = 1M;
         }
 
         #region Event Handlers
@@ -44,8 +45,9 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             txtUserName.Text    = _jobConfig.UserId;
             txtPwd.Text         = _jobConfig.Password;
             txtVerifyPwd.Text   = _jobConfig.Password;
-            txtWOImportDir.Text = _jobConfig.WorkOrderQueueDirectory;
+            txtWOImportDir.Text = _jobConfig.WorkOrderExportDirectory;
             scheduleTimeLabel.Text = _jobConfig.ScheduledTime;
+            numUpDownLbPeriod.Value = _jobConfig.LookBackPeriod;
         }
 
         private void btnOk_Click(object sender, EventArgs e)
@@ -70,8 +72,9 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             _jobConfig.UserId = txtUserName.Text;
             _jobConfig.Password = txtPwd.Text; //encrypt this before saving
             _jobConfig.LogFilePath = txtLogFilePath.Text;
-            _jobConfig.WorkOrderQueueDirectory = txtWOImportDir.Text;
+            _jobConfig.WorkOrderExportDirectory = txtWOImportDir.Text;
             _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
+            _jobConfig.LookBackPeriod = numUpDownLbPeriod.Value;
 
             //Save the config
             SaveConfig();
@@ -126,14 +129,15 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
                     using (FileStream stream = new FileInfo(configFile).OpenRead())
                     {
                         var dsObj = _xmlSerializer.Deserialize(stream);
-                        WorkOrderImportJobConfig tempConfig = dsObj as WorkOrderImportJobConfig;
+                        WorkOrderExportJobConfig tempConfig = dsObj as WorkOrderExportJobConfig;
 
                         _jobConfig.SMBDir = tempConfig.SMBDir;
                         _jobConfig.UserId = tempConfig.UserId;
                         _jobConfig.Password = tempConfig.Password; //decrypt this
                         _jobConfig.LogFilePath = tempConfig.LogFilePath;
-                        _jobConfig.WorkOrderQueueDirectory = tempConfig.WorkOrderQueueDirectory;
                         _jobConfig.ScheduledTime = tempConfig.ScheduledTime;
+                        _jobConfig.WorkOrderExportDirectory = tempConfig.WorkOrderExportDirectory;
+                        _jobConfig.LookBackPeriod = tempConfig.LookBackPeriod;
                     }
                 }
             }

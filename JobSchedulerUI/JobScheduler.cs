@@ -75,6 +75,8 @@ namespace Syscon.JobSchedulerUI
                     job.JobConfig.ScheduledTime     = (t!= null) ? t.Definition.Triggers[0].ToString(): NOT_SET;
                     job.JobStatus                   = (t != null) ? (JobStatus)t.State : JobStatus.Disabled;
                     job.Enqueued                    = (t != null);
+
+                    job.JobConfig.SaveConfig();
                 }
             }
         }
@@ -362,6 +364,8 @@ namespace Syscon.JobSchedulerUI
 
                             scheduledJobModel.ScheduledTime = td.Triggers[0].ToString();
                             scheduledJobModel.JobStatus = JobStatus.Ready;
+                            scheduledJobModel.Job.JobConfig.ScheduledTime = scheduledJobModel.ScheduledTime;
+                            scheduledJobModel.Job.JobConfig.SaveConfig();
 
                             MessageBox.Show("Job successfully added to the Windows scheduled tasks.");
                         }

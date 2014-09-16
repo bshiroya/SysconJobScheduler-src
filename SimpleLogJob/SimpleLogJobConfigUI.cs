@@ -78,6 +78,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
                         _jobConfig.UserId = tempConfig.UserId;
                         _jobConfig.Password = tempConfig.Password;
                         _jobConfig.LogFilePath = tempConfig.LogFilePath;
+                        _jobConfig.ScheduledTime = tempConfig.ScheduledTime;
                     }
                 }
             }
