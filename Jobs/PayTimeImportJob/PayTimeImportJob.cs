@@ -53,7 +53,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
         public override void ExceuteJob()
         {
-            this.Log("Started execution of work order export job.");
+            this.Log("Started execution of daily payroll time import job.");
 
             _jobConfig.LoadConfig();
 
@@ -87,18 +87,20 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                 }
                 DataTable dtLogFile = null;
 
+                string folderPath = Path.GetDirectoryName(currentFilePath);
+                string fileNameWithoutPath = Path.GetFileName(currentFilePath);//currentFilePath.Substring(currentFilePath.LastIndexOf('\\') + 1);
+
                 //Logic for payroll time import program
                 try
                 {
                     //Read the CSV file and import the entries to Sage Database
-                    string fileNameWithoutPath = currentFilePath.Substring(currentFilePath.LastIndexOf('\\') + 1);
 
                     //Log the filename in the log file
                     this.Log("Processing file - {0}", fileNameWithoutPath);
 
-                    DataTable dt = this.DataTableFromCSV("TimeImportTable", currentFilePath, true);
-                    dtLogFile = dt.Clone();
-                    dtLogFile.Columns.Add("", typeof(string));
+                    DataTable dt = this.DataTableFromCSV("TimeImport", currentFilePath, true);
+                    dtLogFile = dt.Copy();
+                    dtLogFile.Columns.Add("Accepted/Rejected", typeof(string));
                     dtLogFile.Columns.Add("Reason for Rejected", typeof(string));
 
                     if (dt.Columns.Count != 6)
@@ -107,6 +109,8 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                         return;
                     }
 
+                    int rowCount = 0;
+
                     foreach (DataRow dr in dt.Rows)
                     {
                         DateTime workDate;
@@ -114,24 +118,87 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
 
                         string empId        = (string)dr["EmployeeNumber"];
                         string workOrder    = (string)dr["WorkOrder"];
-                        string costCode     = (string)dr["CostCode"];
+                        string cstCode      = (string)dr["CostCode"];
                         string hours        = (string)dr["Hours"];
-                        string payType      = (string)dr["PayType"];
+                        string payTyp       = (string)dr["PayType"];
 
-                        int empIdCount = con.GetScalar<int>("select count(*) from employ where recnum={0}", empId);
+                        int empNum = Int32.Parse(empId);
+                        decimal costCode = Decimal.Parse(cstCode);
+
+                        int empIdCount = con.GetScalar<int>("select count(*) from employ where recnum={0}", empNum);
                         int orderNumCount = con.GetScalar<int>("select count(*) from srvinv where ordnum='{0}'", workOrder);
                         int costCodeCount = con.GetScalar<int>("select count(*) from cstcde where recnum={0}", costCode);
 
                         if (empIdCount > 0 && orderNumCount > 0 && costCodeCount > 0)
                         {
-                            //Add to database
+                            try
+                            {
+                                //Add to database
+                                string selectSql = "SELECT paydte, empnum, jobnum, loctax, crtfid, phsnum, cstcde, paytyp, paygrp, payrte, payhrs, cmpcde, usrdf1 FROM dlypyr WHERE paydte = DATE(1000,01,01)";
+                                DataTable dtDlyPyr = con.GetDataTable("DlyPyr", selectSql);
+                                dtDlyPyr.Rows.Clear();
+                                
+                                decimal payHours = Decimal.Parse(hours);
+                                int payType = Int32.Parse(payTyp);
+                                string phaseNum = workOrder.Substring(workOrder.Length - 3, 3);
+                                phaseNum = (phaseNum == "000") ? string.Empty : phaseNum;                                
 
+                                decimal jobNumber = con.GetScalar<int>("SELECT jobnum from srvinv WHERE ordnum='{0}'", workOrder);
+                                int localTax = con.GetScalar<int>("SELECT lcltax from actrec WHERE recnum= {0}", jobNumber);
+                                int certified = con.GetScalar<int>("SELECT crtfid from actrec WHERE recnum= {0}", jobNumber);
+                                int payGroup = con.GetScalar<int>("SELECT paygrp FROM employ WHERE recnum={0}", empNum);
+                                int compCode = con.GetScalar<int>("SELECT wrkcmp  FROM employ WHERE recnum = {0}", empNum);
+                                string usrDf1 = (fileNameWithoutPath.Length > 20) ? Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, 20) : Path.GetFileNameWithoutExtension(fileNameWithoutPath);
 
+                                //Verify phase number
+                                int phaseNumber = 0;
+                                Int32.TryParse(phaseNum, out phaseNumber);
 
+                                int phase = con.GetScalar<int>("SELECT phsnum FROM jobphs where recnum = {0} AND phsnum={1}", jobNumber, phaseNumber);
+
+                                DataRow drDlyPyr = dtDlyPyr.NewRow();
+                                drDlyPyr["paydte"] = workDate;
+                                drDlyPyr["empnum"] = empNum;
+                                drDlyPyr["jobnum"] = jobNumber;
+                                drDlyPyr["loctax"] = localTax;
+                                drDlyPyr["crtfid"] = (certified == 1) ? "Y" : "N";
+                                drDlyPyr["phsnum"] = phase;
+                                drDlyPyr["cstcde"] = costCode;
+                                drDlyPyr["paytyp"] = payType;
+                                drDlyPyr["paygrp"] = payGroup;
+                                drDlyPyr["payrte"] = GetPayRate(payType, payGroup, empNum, con);
+                                drDlyPyr["payhrs"] = payHours;
+                                drDlyPyr["cmpcde"] = compCode;
+                                drDlyPyr["usrdf1"] = usrDf1;
+
+                                SetNullOff(con);
+                                string insertSql = drDlyPyr.FoxproInsertString("dlypyr");
+                                con.ExecuteNonQuery(insertSql);
+
+                                DataRow dr1 = dtLogFile.Rows[rowCount];
+                                dr1["Accepted/Rejected"] = "Accepted";
+                                dr1["Reason for Rejected"] = string.Empty;
+                                rowCount++;
+                            }
+                            catch (Exception ex)
+                            {
+                                DataRow dr1 = dtLogFile.Rows[rowCount];
+                                dr1["Accepted/Rejected"] = "Rejected";
+                                dr1["Reason for Rejected"] = string.Format("Error in adding record #{0} to DB - Employee Number - {1}; Work Order - {2}; Cost Code - {3}", rowCount + 1, empId, workOrder, cstCode);
+
+                                this.Log("Invalid record # {0} in csv file. Skipping this entry\n Exception Message - {1}", rowCount + 1, ex.Message);
+                                rowCount++;
+                                continue;
+                            }
                         }
                         else
                         {
-                            this.Log("Invalid record in csv file. Skipping this entry");
+                            DataRow dr1 = dtLogFile.Rows[rowCount];
+                            dr1["Accepted/Rejected"] = "Rejected";
+                            dr1["Reason for Rejected"] = string.Format("Matching record #{0} not found in DB. Employee Number - {1}; Work Order - {2}; Cost Code - {3}", rowCount + 1, empId, workOrder, cstCode);
+
+                            this.Log("Invalid record # {0} in csv file. Skipping this entry", rowCount + 1);
+                            rowCount++;
                             continue;
                         }
                     }
@@ -139,11 +206,13 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                 }
                 catch (Exception ex)
                 {
-                    this.Log("Exception in daily payroll time import job. Exception - {0}", ex.Message);
+                    this.Log("Exception in processing file - {0}. Exception - {0}", fileNameWithoutPath, ex.Message);
                 }
                 finally
                 {
-                    dtLogFile.SaveAsCSV("");
+                    string logFileName = Path.Combine(folderPath, Path.GetFileNameWithoutExtension(fileNameWithoutPath) + "Log.csv");
+                    dtLogFile.SaveAsCSV(logFileName);
+                    SetNullOn(con);
                 }
 
                 //Log end of execution, time etc.
@@ -151,6 +220,25 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                 this.Log("-----------------------------------------------------------------------------------------\n");
             }
             
+        }
+
+        private decimal GetPayRate(int payType, int payGroup, int empNum, System.Data.OleDb.OleDbConnection con)
+        {
+            decimal payRate = 0.0M;
+            string strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", payType, payGroup);
+
+            if (payType == 0)
+            {
+                strSql = string.Format("SELECT payrt{0} FROM employ where recnum ={1} ", payType, empNum);
+            }
+            else
+            {
+                strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", payType, payGroup);
+            }
+
+            payRate = con.GetScalar<decimal>(strSql);
+
+            return payRate;
         }
 
         /// <summary>
@@ -278,6 +366,22 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
             allLines = null;
 
             return dt;
+        }
+
+        private void SetNullOn(System.Data.OleDb.OleDbConnection connection)
+        {
+            //Set this so that FoxPro doesn't try to insert null values in empty columns
+            System.Data.OleDb.OleDbCommand dbCmdNull = connection.CreateCommand();
+            dbCmdNull.CommandText = "SET NULL ON";
+            dbCmdNull.ExecuteNonQuery();
+        }
+
+        private void SetNullOff(System.Data.OleDb.OleDbConnection connection)
+        {
+            //Set this so that FoxPro doesn't try to insert null values in empty columns
+            System.Data.OleDb.OleDbCommand dbCmdNull = connection.CreateCommand();
+            dbCmdNull.CommandText = "SET NULL OFF";
+            dbCmdNull.ExecuteNonQuery();
         }
         #endregion
     }
