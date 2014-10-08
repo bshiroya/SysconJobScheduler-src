@@ -131,10 +131,10 @@ namespace Syscon.JobSchedulerUI
         private void JobScheduler_Load(object sender, EventArgs e)
         {
             // resets it everytime it is run so that the user can't just change to a product they already have a license for
-            Env.SetConfigVar("product_id", 178507);
+            Env.SetConfigVar("product_id", 337264);
 
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = "1.4.1.0";
+            var product_version = "1.4.2.0";
             bool require_login = false;
 
             if (!_loaded)
@@ -451,7 +451,7 @@ namespace Syscon.JobSchedulerUI
         private void activateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = Env.GetConfigVar("product_version", "1.4.1.0", false);
+            var product_version = Env.GetConfigVar("product_version", "1.4.2.0", false);
 
             var frm = new SysconCommon.Protection.ProtectionPlusOnlineActivationForm(product_id, product_version);
             frm.ShowDialog();
