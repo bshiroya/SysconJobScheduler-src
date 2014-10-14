@@ -15,7 +15,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
     /// <summary>
     /// Config UI for the work order import job
     /// </summary>
-    public partial class WorkOrderImportJobConfigUI : Form
+    public partial class WorkOrderExportJobConfigUI : Form
     {
         #region Member variables
         private WorkOrderExportJobConfig    _jobConfig = null;
@@ -26,7 +26,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
         /// Ctor
         /// </summary>
         /// <param name="job"></param>
-        public WorkOrderImportJobConfigUI()
+        public WorkOrderExportJobConfigUI()
         {
             InitializeComponent();
             _jobConfig = new WorkOrderExportJobConfig();

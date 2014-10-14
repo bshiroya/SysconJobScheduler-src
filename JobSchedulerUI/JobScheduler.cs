@@ -146,7 +146,7 @@ namespace Syscon.JobSchedulerUI
 
             try
             {
-                var license = SysconCommon.Protection.ProtectionInfo.GetLicense(product_id, product_version, 15751);
+                var license = SysconCommon.Protection.ProtectionInfo.GetLicense(product_id, product_version);
                 if (license.IsTrial)
                 {
                     if (!license.IsValid())

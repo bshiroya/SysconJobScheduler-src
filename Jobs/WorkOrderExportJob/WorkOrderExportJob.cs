@@ -27,7 +27,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
     public class WorkOrderExportJob : ScheduledJob
     {
         #region Member variables
-        private WorkOrderImportJobConfigUI  _configUI   = null;
+        private WorkOrderExportJobConfigUI  _configUI   = null;
 
         private COMMethods _methods = null;
         #endregion
@@ -38,7 +38,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
         public WorkOrderExportJob(): base()
         {
             _jobConfig = new WorkOrderExportJobConfig();
-            _configUI = new WorkOrderImportJobConfigUI();
+            _configUI = new WorkOrderExportJobConfigUI();
 
             _methods = new COMMethods();
         }
@@ -92,7 +92,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
                     //put the data into SageWorkOrderExport.csv file in the WorkOrderExportDirectory
                     foreach (DataRow dr in dt.Rows)
                     {
-                        string status = ((decimal)dr["status"]) == 7M ? "Yes" : "No";
+                        string status = ((decimal)dr["status"]) == 7M ? "No" : "Yes";
                         string description = (string)dr["dscrpt"];
                         description = (description.Length > 50) ? description.Substring(0, 50) : description.PadRight(50);
                         string csvLine = string.Format("{0}, {1}, {2}, {3}", description, (string)dr["ordnum"], (string)dr["ordnum"], status);
