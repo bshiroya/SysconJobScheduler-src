@@ -47,36 +47,48 @@ namespace Syscon.JobSchedulerUI
 
             LoadJobPlugIns();
 
-            using (TaskService ts = new TaskService())
+            try
             {
-                //Load which jobs are already scheduled in the service.
-                foreach (IScheduledJob job in this.ScheduledJobs)
+
+                using (TaskService ts = new TaskService())
                 {
-                    job.JobConfig.LoadConfig();
-
-                    string jobName = job.ToString().Substring(job.ToString().LastIndexOf('.') + 1);
-                    string taskName = jobName + "-" + job.JobId.ToString();
-
-                    TaskFolder sysconTaskFolder = GetTaskFolder(ts, SYSCON_TASK_FOLDER);
-                    Task t = null;
-
-                    // Retrieve the task
-                    if (sysconTaskFolder != null)
+                    //Load which jobs are already scheduled in the service.
+                    foreach (IScheduledJob job in this.ScheduledJobs)
                     {
-                        //Get from Syscon folder
-                        t = sysconTaskFolder.Tasks.FirstOrDefault(tt => tt.Name == taskName);
-                    }
-                    else
-                    {
-                        //get from Root folder
-                        t = ts.GetTask(taskName); 
-                    }
-                    
-                    job.JobConfig.ScheduledTime     = (t!= null) ? t.Definition.Triggers[0].ToString(): NOT_SET;
-                    job.JobStatus                   = (t != null) ? (JobStatus)t.State : JobStatus.Disabled;
-                    job.Enqueued                    = (t != null);
+                        job.JobConfig.LoadConfig();
 
-                    job.JobConfig.SaveConfig();
+                        string jobName = job.ToString().Substring(job.ToString().LastIndexOf('.') + 1);
+                        string taskName = jobName + "-" + job.JobId.ToString();
+
+                        TaskFolder sysconTaskFolder = GetTaskFolder(ts, SYSCON_TASK_FOLDER);
+                        Task t = null;
+
+                        // Retrieve the task
+                        if (sysconTaskFolder != null)
+                        {
+                            //Get from Syscon folder
+                            t = sysconTaskFolder.Tasks.FirstOrDefault(tt => tt.Name == taskName);
+                        }
+                        else
+                        {
+                            //get from Root folder
+                            t = ts.GetTask(taskName);
+                        }
+
+                        job.JobConfig.ScheduledTime = (t != null) ? t.Definition.Triggers[0].ToString() : NOT_SET;
+                        job.JobStatus = (t != null) ? (JobStatus)t.State : JobStatus.Disabled;
+                        job.Enqueued = (t != null);
+
+                        job.JobConfig.SaveConfig();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Env.Log("Exception in accessing the windows task scheduler information for the plug-ins.\nException: {0}\n StackTrace: {1}", ex.Message, ex.StackTrace);
+                if (ex.InnerException != null)
+                {
+                    Env.Log("InnerException: {0}\n StackTrace: {1}", ex.InnerException.Message, ex.InnerException.StackTrace);
                 }
             }
         }

@@ -53,9 +53,9 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
         /// <remarks>This method should contain all the logic to be executed for this job.</remarks>
         public override void ExceuteJob()
         {
-            this.Log("Started execution of daily payroll time import job.");
-
             _jobConfig.LoadConfig();
+
+            this.Log("Started execution of daily payroll time import job.");
 
             SysconCommon.Common.Environment.Connections.SetOLEDBFreeTableDirectory(_jobConfig.SMBDir);
 

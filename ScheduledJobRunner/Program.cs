@@ -14,7 +14,6 @@ namespace Syscon.ScheduledJobRunner
 {
     public class Program
     {
-
         static void Main(string[] args)
         {
             Guid jobId;
@@ -35,16 +34,23 @@ namespace Syscon.ScheduledJobRunner
                 return;
             }
 
-            JobLoader jobLoader = new JobLoader();
-            jobLoader.LoadJobPlugIns();
-
-            foreach (IScheduledJob job in jobLoader.ScheduledJobs)
+            try
             {
-                if (job.JobId == jobId)
+                JobLoader jobLoader = new JobLoader();
+                jobLoader.LoadJobPlugIns();
+
+                foreach (IScheduledJob job in jobLoader.ScheduledJobs)
                 {
-                    //Run the job.
-                    job.ExceuteJob();
+                    if (job.JobId == jobId)
+                    {
+                        //Run the job.
+                        job.ExceuteJob();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception in ScheduledJobRunner program\n" + ex.Message);
             }
         }
     }
@@ -111,7 +117,6 @@ namespace Syscon.ScheduledJobRunner
             catch (CompositionException ex)
             {
                 Console.WriteLine("Exception in loading Job PlugIns" + ex.Message);
-                //Env.Log("Exception in loading job plug-ins" + ex.Message);
             }
         }
     }
