@@ -508,6 +508,17 @@
             A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
             </returns>
         </member>
+        <member name="M:GroupControls.ButtonListItem.OnNotifyPropertyChanged(System.String)">
+            <summary>
+            Called when a property value has changed.
+            </summary>
+            <param name="propertyName">Name of the property.</param>
+        </member>
+        <member name="E:GroupControls.ButtonListItem.PropertyChanged">
+            <summary>
+            Occurs when a property value has changed.
+            </summary>
+        </member>
         <member name="P:GroupControls.ButtonListItem.Checked">
             <summary>
             Gets or sets a value indicating whether this <see cref="T:GroupControls.ButtonListItem"/> is checked.
@@ -554,6 +565,27 @@
             Creates a new instance of a <see cref="T:GroupControls.CheckBoxList"/>.
             </summary>
         </member>
+        <member name="M:GroupControls.CheckBoxList.GetFlagsValue``1(``0)">
+            <summary>
+            If each items <c>Tag</c> property has been assigned a value of <c>T</c>, this method retrived the OR value of all items.
+            </summary>
+            <typeparam name="T">An enumerated type with a FlagsAttribute assigned to all item's <c>Tag</c> properties.</typeparam>
+            <param name="defaultValue">The default value.</param>
+            <returns>The OR value of all items</returns>
+        </member>
+        <member name="M:GroupControls.CheckBoxList.SetFlagsValue``1(``0)">
+            <summary>
+            If each items <c>Tag</c> property has been assigned a value of <c>T</c>, this method with set the item's Checked property appropriately.
+            </summary>
+            <typeparam name="T">An enumerated type with a FlagsAttribute assigned to all item's <c>Tag</c> properties.</typeparam>
+            <param name="value">The composite flag value.</param>
+        </member>
+        <member name="M:GroupControls.CheckBoxList.ProcessFlagsOnCheckStateChanged``1(GroupControls.CheckBoxListItem)">
+            <summary>
+            Processes the flags on check state changed. Include this method in the event handler for ItemCheckStateChanged.
+            </summary>
+            <param name="item">The item that was changed.</param>
+        </member>
         <member name="M:GroupControls.CheckBoxList.GetButtonSize(System.Drawing.Graphics)">
             <summary>
             Gets the size of the image used to display the button.
@@ -570,10 +602,11 @@
             	<c>true</c> if list has the mnemonic; otherwise, <c>false</c>.
             </returns>
         </member>
-        <member name="M:GroupControls.CheckBoxList.OnItemCheckStateChanged">
+        <member name="M:GroupControls.CheckBoxList.OnItemCheckStateChanged(GroupControls.CheckBoxListItemCheckStateChangedEventArgs)">
             <summary>
             Called when item check state changed.
             </summary>
+            <param name="e">The <see cref="T:GroupControls.CheckBoxListItemCheckStateChangedEventArgs"/> instance containing the event data.</param>
         </member>
         <member name="M:GroupControls.CheckBoxList.OnKeyDown(System.Windows.Forms.KeyEventArgs)">
             <summary>
@@ -642,6 +675,25 @@
             </summary>
             <value>
             Any list supportting and <see cref="T:System.Collections.IList"/> interface.
+            </value>
+        </member>
+        <member name="T:GroupControls.CheckBoxListItemCheckStateChangedEventArgs">
+            <summary>
+            Provides data for the <see cref="E:CheckBoxList.ItemCheckStateChanged"/> event of the <see cref="T:GroupControls.CheckBoxList"/> control.
+            </summary>
+        </member>
+        <member name="M:GroupControls.CheckBoxListItemCheckStateChangedEventArgs.#ctor(GroupControls.CheckBoxListItem)">
+            <summary>
+            Initializes a new instance of the <see cref="T:GroupControls.CheckBoxListItemCheckStateChangedEventArgs"/> class.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="P:GroupControls.CheckBoxListItemCheckStateChangedEventArgs.Item">
+            <summary>
+            Gets the <see cref="T:GroupControls.CheckBoxListItem"/> whose checked state is changing.
+            </summary>
+            <value>
+            The <see cref="T:GroupControls.CheckBoxListItem"/> whose checked state is changing.
             </value>
         </member>
         <member name="T:GroupControls.CheckBoxListItem">
@@ -1139,6 +1191,13 @@
             <param name="index">The index.</param>
             <param name="value">The value.</param>
         </member>
+        <member name="M:System.Collections.Generic.EventedList`1.OnItemPropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)">
+            <summary>
+            Called when [item property changed].
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
+        </member>
         <member name="M:System.Collections.Generic.EventedList`1.OnItemChanged(System.Int32,`0,`0)">
             <summary>
             Called when [set].
@@ -1208,6 +1267,11 @@
         <member name="E:System.Collections.Generic.EventedList`1.ItemDeleted">
             <summary>
             Occurs when an item has been deleted.
+            </summary>
+        </member>
+        <member name="E:System.Collections.Generic.EventedList`1.ItemPropertyChanged">
+            <summary>
+            Occurs when an item's property value has been changed.
             </summary>
         </member>
         <member name="E:System.Collections.Generic.EventedList`1.Reset">
@@ -1384,28 +1448,6 @@
             </summary>
             <param name="textValues">The text value pairs representing matching text and subtext.</param>
             <exception cref="T:System.ArgumentException">List of values must contain matching text/subtext entries for an even count of strings.;textValues</exception>
-        </member>
-        <member name="M:GroupControls.CheckBoxListItemCollection.OnItemAdded(System.Int32,GroupControls.CheckBoxListItem)">
-            <summary>
-            Called when a <see cref="T:GroupControls.CheckBoxListItem"/> has been added.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
-        </member>
-        <member name="M:GroupControls.CheckBoxListItemCollection.OnItemChanged(System.Int32,GroupControls.CheckBoxListItem,GroupControls.CheckBoxListItem)">
-            <summary>
-            Called when a <see cref="T:GroupControls.CheckBoxListItem"/> has been changed.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="oldValue">The old value.</param>
-            <param name="newValue">The new value.</param>
-        </member>
-        <member name="M:GroupControls.CheckBoxListItemCollection.OnItemDeleted(System.Int32,GroupControls.CheckBoxListItem)">
-            <summary>
-            Called when a <see cref="T:GroupControls.CheckBoxListItem"/> has been deleted.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
         </member>
         <member name="T:GroupControls.RepeatDirection">
             <summary>
@@ -1597,28 +1639,6 @@
             </summary>
             <param name="textValues">The text value pairs representing matching text and subtext.</param>
             <exception cref="T:System.ArgumentException">List of values must contain matching text/subtext entries for an even count of strings.;textValues</exception>
-        </member>
-        <member name="M:GroupControls.RadioButtonListItemCollection.OnItemAdded(System.Int32,GroupControls.RadioButtonListItem)">
-            <summary>
-            Called when a new <see cref="T:GroupControls.RadioButtonListItem"/> has been added.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
-        </member>
-        <member name="M:GroupControls.RadioButtonListItemCollection.OnItemChanged(System.Int32,GroupControls.RadioButtonListItem,GroupControls.RadioButtonListItem)">
-            <summary>
-            Called when a <see cref="T:GroupControls.RadioButtonListItem"/> has been changed.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="oldValue">The old value.</param>
-            <param name="newValue">The new value.</param>
-        </member>
-        <member name="M:GroupControls.RadioButtonListItemCollection.OnItemDeleted(System.Int32,GroupControls.RadioButtonListItem)">
-            <summary>
-            Called when a <see cref="T:GroupControls.RadioButtonListItem"/> has been deleted.
-            </summary>
-            <param name="index">The index.</param>
-            <param name="value">The value.</param>
         </member>
         <member name="T:System.Collections.Generic.SparseArray`1">
             <summary>

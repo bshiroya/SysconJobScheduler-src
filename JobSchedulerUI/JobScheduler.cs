@@ -146,7 +146,7 @@ namespace Syscon.JobSchedulerUI
             Env.SetConfigVar("product_id", 337264);
 
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = "1.4.2.0";
+            var product_version = "1.4.3.0";
             bool require_login = false;
 
             if (!_loaded)
@@ -351,6 +351,9 @@ namespace Syscon.JobSchedulerUI
                             TaskDefinition td = ts.NewTask();
                             td.RegistrationInfo.Description = scheduledJobModel.Job.JobDesc;
                             td.Principal.LogonType = TaskLogonType.InteractiveToken;
+                            td.Principal.RunLevel = TaskRunLevel.Highest;
+                            td.Settings.DisallowStartIfOnBatteries = false;
+                            td.Settings.StopIfGoingOnBatteries = false;
 
                             // Add a trigger that will fire the task at this time every day
                             DailyTrigger dt = (DailyTrigger)td.Triggers.Add(new DailyTrigger { DaysInterval = 1, StartBoundary = schedulerTaskSettingsDlg.StartBoundary });
@@ -463,7 +466,7 @@ namespace Syscon.JobSchedulerUI
         private void activateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var product_id = Env.GetConfigVar("product_id", 0, false);
-            var product_version = Env.GetConfigVar("product_version", "1.4.2.0", false);
+            var product_version = Env.GetConfigVar("product_version", "1.4.3.0", false);
 
             var frm = new SysconCommon.Protection.ProtectionPlusOnlineActivationForm(product_id, product_version);
             frm.ShowDialog();
