@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Syscon.ScheduledJob;
 using System.Xml.Serialization;
 using System.IO;
+using SysconCommon;
 
 namespace Syscon.ScheduledJob.PayTimeImportJob
 {
@@ -19,7 +20,8 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
     {
         #region Member variables
         private PayTimeImportJobConfig    _jobConfig = null;
-        private XmlSerializer               _xmlSerializer = null;
+        private XmlSerializer             _xmlSerializer = null;
+        private COMMethods               _methods = null;
         #endregion
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
         {
             InitializeComponent();
             _jobConfig = new PayTimeImportJobConfig();
+            _methods = new COMMethods();
         }
 
         #region Event Handlers
@@ -68,7 +71,10 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
 
             _jobConfig.SMBDir = txtSageDir.Text;
             _jobConfig.UserId = txtUserName.Text;
-            _jobConfig.Password = txtPwd.Text; //encrypt this before saving
+
+            //encrypt password before saving
+            var hashed_password = _methods.smartEncrypt(txtPwd.Text, false);
+            _jobConfig.Password = hashed_password; 
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
             _jobConfig.PayTimeImportCsvFile = txtTimeImportFile.Text;

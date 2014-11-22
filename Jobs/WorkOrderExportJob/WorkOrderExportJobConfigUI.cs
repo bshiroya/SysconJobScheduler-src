@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Syscon.ScheduledJob;
 using System.Xml.Serialization;
 using System.IO;
+using SysconCommon;
 
 namespace Syscon.ScheduledJob.WorkOrderExportJob
 {
@@ -20,6 +21,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
         #region Member variables
         private WorkOrderExportJobConfig    _jobConfig = null;
         private XmlSerializer               _xmlSerializer = null;
+        private COMMethods                  _methods = null;
         #endregion
 
         /// <summary>
@@ -31,6 +33,7 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
             InitializeComponent();
             _jobConfig = new WorkOrderExportJobConfig();
             _jobConfig.LookBackPeriod = 1M;
+            _methods = new COMMethods();
         }
 
         #region Event Handlers
@@ -70,7 +73,11 @@ namespace Syscon.ScheduledJob.WorkOrderExportJob
 
             _jobConfig.SMBDir = txtSageDir.Text;
             _jobConfig.UserId = txtUserName.Text;
-            _jobConfig.Password = txtPwd.Text; //encrypt this before saving
+
+            //encrypt this before saving
+            var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
+            _jobConfig.Password = hashed_password;
+
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.WorkOrderExportDirectory = txtWOImportDir.Text;
             _jobConfig.ScheduledTime = scheduleTimeLabel.Text;

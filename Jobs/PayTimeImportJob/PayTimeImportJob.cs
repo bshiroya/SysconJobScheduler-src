@@ -29,7 +29,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
         #region Member variables
         private PayTimeImportJobConfigUI  _configUI   = null;
 
-        private COMMethods _methods = null;
+        
         #endregion
 
         /// <summary>
@@ -38,9 +38,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
         public PayTimeImportJob(): base()
         {
             _jobConfig = new PayTimeImportJobConfig();
-            _configUI = new PayTimeImportJobConfigUI();
-
-            _methods = new COMMethods();
+            _configUI = new PayTimeImportJobConfigUI();            
         }
 
         #region IScheduledJob Members
@@ -61,10 +59,8 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
 
             using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
-                var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
-
                 //Login to the SMB Dir
-                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
+                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), _jobConfig.Password);
                 if (login_result == 0)
                 {
                     this.Log("Login failure - Invalid user name or password. Exiting job...");
@@ -78,8 +74,6 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                     return;
                 }
 
-                //string[] files = System.IO.Directory.GetFiles(currentFilePath, "*.csv", System.IO.SearchOption.TopDirectoryOnly);
-
                 if(!File.Exists(currentFilePath))
                 {
                     this.Log("The file - {0} does not exist.", currentFilePath);
@@ -88,7 +82,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                 DataTable dtLogFile = null;
 
                 string folderPath = Path.GetDirectoryName(currentFilePath);
-                string fileNameWithoutPath = Path.GetFileName(currentFilePath);//currentFilePath.Substring(currentFilePath.LastIndexOf('\\') + 1);
+                string fileNameWithoutPath = Path.GetFileName(currentFilePath);
 
                 //Logic for payroll time import program
                 try
@@ -140,8 +134,8 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                                 
                                 decimal payHours = Decimal.Parse(hours);
                                 int payType = Int32.Parse(payTyp);
-                                string phaseNum = workOrder.Substring(workOrder.Length - 3, 3);
-                                phaseNum = (phaseNum == "000") ? string.Empty : phaseNum;                                
+                                string phaseNum = (workOrder.Length == 8) ? workOrder.Substring(workOrder.Length - 4, 4) : string.Empty;//workOrder.Substring(workOrder.Length - 3, 3);
+                                //phaseNum = (phaseNum == "000") ? string.Empty : phaseNum;                                
 
                                 decimal jobNumber = con.GetScalar<int>("SELECT jobnum from srvinv WHERE ordnum='{0}'", workOrder);
                                 int localTax = con.GetScalar<int>("SELECT lcltax from actrec WHERE recnum= {0}", jobNumber);
@@ -153,7 +147,6 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                                 //Verify phase number
                                 int phaseNumber = 0;
                                 Int32.TryParse(phaseNum, out phaseNumber);
-
                                 int phase = con.GetScalar<int>("SELECT phsnum FROM jobphs where recnum = {0} AND phsnum={1}", jobNumber, phaseNumber);
 
                                 DataRow drDlyPyr = dtDlyPyr.NewRow();
