@@ -116,8 +116,11 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                         string hours        = (string)dr["Hours"];
                         string payTyp       = (string)dr["PayType"];
 
-                        int empNum = Int32.Parse(empId);
-                        decimal costCode = Decimal.Parse(cstCode);
+                        int empNum = 0;                        
+                        Int32.TryParse(empId, out empNum);
+
+                        decimal costCode = 0.0M;                        
+                        Decimal.TryParse(cstCode, out costCode);
 
                         int empIdCount = con.GetScalar<int>("select count(*) from employ where recnum={0}", empNum);
                         int orderNumCount = con.GetScalar<int>("select count(*) from srvinv where ordnum='{0}'", workOrder);
@@ -131,9 +134,12 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                                 string selectSql = "SELECT paydte, empnum, jobnum, loctax, crtfid, phsnum, cstcde, paytyp, paygrp, payrte, payhrs, cmpcde, usrdf1 FROM dlypyr WHERE paydte = DATE(1000,01,01)";
                                 DataTable dtDlyPyr = con.GetDataTable("DlyPyr", selectSql);
                                 dtDlyPyr.Rows.Clear();
-                                
-                                decimal payHours = Decimal.Parse(hours);
-                                int payType = Int32.Parse(payTyp);
+
+                                decimal payHours = 0.0M;
+                                Decimal.TryParse(hours, out payHours);
+                                int payType = 0;
+                                Int32.TryParse(payTyp, out payType);
+
                                 string phaseNum = (workOrder.Length == 8) ? workOrder.Substring(workOrder.Length - 4, 4) : string.Empty;//workOrder.Substring(workOrder.Length - 3, 3);
                                 //phaseNum = (phaseNum == "000") ? string.Empty : phaseNum;                                
 
