@@ -130,8 +130,8 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                         {
                             try
                             {
-                                //Add to database
-                                string selectSql = "SELECT paydte, empnum, jobnum, loctax, crtfid, phsnum, cstcde, paytyp, paygrp, payrte, payhrs, cmpcde, usrdf1 FROM dlypyr WHERE paydte = DATE(1000,01,01)";
+                                //Getting a dummy DataRow with the required columns to fill the data
+                                string selectSql = "SELECT paydte, empnum, wrkord, jobnum, loctax, crtfid, phsnum, cstcde, paytyp, paygrp, payrte, payhrs, cmpcde, usrdf1 FROM dlypyr WHERE paydte = DATE(1000,01,01)";
                                 DataTable dtDlyPyr = con.GetDataTable("DlyPyr", selectSql);
                                 dtDlyPyr.Rows.Clear();
 
@@ -158,6 +158,7 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                                 DataRow drDlyPyr = dtDlyPyr.NewRow();
                                 drDlyPyr["paydte"] = workDate;
                                 drDlyPyr["empnum"] = empNum;
+                                drDlyPyr["wrkord"] = workOrder;
                                 drDlyPyr["jobnum"] = jobNumber;
                                 drDlyPyr["loctax"] = localTax;
                                 drDlyPyr["crtfid"] = (certified == 1) ? "Y" : "N";
