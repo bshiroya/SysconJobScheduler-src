@@ -218,22 +218,26 @@ namespace Syscon.ScheduledJob.PayTimeImportJob
                 //Log end of execution, time etc.
                 this.Log("Finished execution of daily payroll time import job.");
                 this.Log("-----------------------------------------------------------------------------------------\n");
-            }
-            
+            }            
         }
 
         private decimal GetPayRate(int payType, int payGroup, int empNum, System.Data.OleDb.OleDbConnection con)
         {
             decimal payRate = 0.0M;
-            string strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", payType, payGroup);
+            string strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", 1, -11111);
 
-            if (payType == 0)
+            switch(payType)
             {
-                strSql = string.Format("SELECT payrt{0} FROM employ where recnum ={1} ", payType, empNum);
-            }
-            else
-            {
-                strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", payType, payGroup);
+                case 0:
+                    strSql = string.Format("SELECT payrt{0} FROM employ where recnum ={1} ", payType, empNum);
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                    strSql = string.Format("SELECT payrt{0} FROM paygrp where recnum ={1} ", payType, payGroup);
+                    break;
+                default:
+                    break;
             }
 
             payRate = con.GetScalar<decimal>(strSql);
