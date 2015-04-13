@@ -30,7 +30,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
     {
         #region Member Variables
         private SimpleLogJobConfigUI _configUI      = null;
-        private COMMethods           _methods       = null;
 
         #endregion
 
@@ -41,8 +40,6 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         {
             _jobConfig = new SimpleLogJobConfig();
             _configUI = new SimpleLogJobConfigUI();
-
-            _methods = new COMMethods();
 
             //Load the config
             _jobConfig.LoadConfig();
@@ -62,10 +59,8 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 
             using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
-                var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
-
                 //Login to the SMB Dir
-                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
+                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), _jobConfig.Password);
                 if (login_result == 0)
                 {
                     this.Log("Login failure - Invalid user name or password. Exiting job...");

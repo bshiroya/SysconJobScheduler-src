@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 
 using Syscon.ScheduledJob;
+using SysconCommon;
 
 namespace Syscon.ScheduledJob.SimpleLogJob
 {
@@ -18,6 +19,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         #region Member Variables
         private SimpleLogJobConfig  _jobConfig      = null;
         private XmlSerializer       _xmlSerializer  = null;
+        private COMMethods           _methods       = null;
 
         #endregion
 
@@ -28,6 +30,7 @@ namespace Syscon.ScheduledJob.SimpleLogJob
         {
             InitializeComponent();
             _jobConfig = new SimpleLogJobConfig();
+            _methods = new COMMethods();
         }
 
         #region Public Methods
@@ -136,7 +139,10 @@ namespace Syscon.ScheduledJob.SimpleLogJob
 
             _jobConfig.SMBDir = txtSMBDir.Text;
             _jobConfig.UserId = txtUserName.Text;
-            _jobConfig.Password = txtPwd.Text;
+
+            //encrypt password before saving
+            var hashed_password = _methods.smartEncrypt(txtPwd.Text, false);
+            _jobConfig.Password = hashed_password;
             _jobConfig.ScheduledTime = scheduleTimeLabel.Text;
             _jobConfig.LogFilePath = txtLogFilePath.Text;
 

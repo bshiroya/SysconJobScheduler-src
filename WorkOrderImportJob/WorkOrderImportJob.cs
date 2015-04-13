@@ -32,7 +32,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
 
         // Create instance of sage API
         private IMBXML _iXML = null;
-        private COMMethods _methods = null;
         #endregion
 
         /// <summary>
@@ -44,7 +43,6 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             _configUI = new WorkOrderImportJobConfigUI();
 
             _iXML = new IMBXML();
-            _methods = new COMMethods();
         }
 
         #region IScheduledJob Members
@@ -72,10 +70,8 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
 
             using (var con = SysconCommon.Common.Environment.Connections.GetOLEDBConnection())
             {
-                var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
-
                 //Login to the SMB Dir
-                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
+                var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), _jobConfig.Password);
                 if (login_result == 0)
                 {
                     this.Log("Login failure - Invalid user name or password. Exiting job...");
@@ -323,7 +319,10 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             dcElement = new XElement("WorkOrderDate", FormatDate((string)dr["WorkOrderDate"]));
             workOrderElement.Add(dcElement);
 
-            dcElement = new XElement("Desc", dr["Desc"]);
+            string desc = (string)dr["Desc"];
+            if (desc.Length > 45)
+                desc = desc.Substring(0, 45);
+            dcElement = new XElement("Desc", desc);
             workOrderElement.Add(dcElement);
 
             dcElement = new XElement("Addr1", dr["Addr1"]);
@@ -389,7 +388,10 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
             dcElement = new XElement("WorkOrderDate", FormatDate((string)dr["WorkOrderDate"]));
             workOrderElement.Add(dcElement);
 
-            dcElement = new XElement("Desc", dr["Desc"] + "By AMIT");
+            string desc = (string)dr["Desc"];
+            if (desc.Length > 45)
+                desc = desc.Substring(0, 45);
+            dcElement = new XElement("Desc", desc);            
             workOrderElement.Add(dcElement);
 
             dcElement = new XElement("Addr1", dr["Addr1"]);
@@ -444,12 +446,26 @@ namespace Syscon.ScheduledJob.WorkOrderImportJob
         {
             string fileNameWithoutPath = Path.GetFileName(fileName);
 
-            string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed Files\\");
+            string archivePath = Path.Combine(Path.GetDirectoryName(fileName), "Processed Files");
+            string archiveFileName = Path.Combine(archivePath, fileNameWithoutPath);
+
             if (!Directory.Exists(archivePath))
             {
                 Directory.CreateDirectory(archivePath);
             }
-            File.Move(fileName, archivePath + fileNameWithoutPath);
+
+            if (File.Exists(archiveFileName))
+            {
+                //TODO: Rename & Move to archive folder
+
+                //Delete for the time being
+                File.Delete(archiveFileName);
+                File.Move(fileName, archiveFileName);
+            }
+            else
+            {
+                File.Move(fileName, archiveFileName);
+            }
             this.Log("The file - {0} moved to processed folder after import.", fileNameWithoutPath);
         }
 

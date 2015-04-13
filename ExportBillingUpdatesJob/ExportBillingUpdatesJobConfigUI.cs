@@ -22,6 +22,8 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         #region Member variables
         private ExportBillingUpdatesJobConfig   _jobConfig = null;
         private XmlSerializer                   _xmlSerializer = null;
+        private COMMethods                      _methods    = null;
+
         #endregion
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         {
             InitializeComponent();
             _jobConfig = new ExportBillingUpdatesJobConfig();
+            _methods = new COMMethods();
 
             LoadConfig();
         }
@@ -82,7 +85,7 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 
                         _jobConfig.SMBDir = tempConfig.SMBDir;
                         _jobConfig.UserId = tempConfig.UserId;
-                        _jobConfig.Password = tempConfig.Password; //decrypt this
+                        _jobConfig.Password = tempConfig.Password;
                         _jobConfig.LogFilePath = tempConfig.LogFilePath;
                         _jobConfig.BillingUpdateQueueDirectory = tempConfig.BillingUpdateQueueDirectory;
                         _jobConfig.ScheduledTime = tempConfig.ScheduledTime;
@@ -138,7 +141,10 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
 
             _jobConfig.SMBDir = txtSageDir.Text;
             _jobConfig.UserId = txtUserName.Text;
-            _jobConfig.Password = txtPwd.Text;// _methods.smartEncrypt(txtPwd.Text, false); //encrypt this before saving
+
+            //encrypt password before saving
+            var hashed_password = _methods.smartEncrypt(txtPwd.Text, false);
+            _jobConfig.Password = hashed_password;
             _jobConfig.LogFilePath = txtLogFilePath.Text;
             _jobConfig.BillingUpdateQueueDirectory = txtBillUpdatesExportDir.Text;
             _jobConfig.ScheduledTime = scheduleTimeLabel.Text;

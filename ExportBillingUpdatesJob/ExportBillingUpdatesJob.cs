@@ -26,7 +26,6 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
     {
         #region Member variables
         private ExportBillingUpdatesJobConfigUI _configUI   = null;
-        private COMMethods                      _methods    = null;
 
         #endregion
 
@@ -37,8 +36,6 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
         {
             _jobConfig = new ExportBillingUpdatesJobConfig();
             _configUI = new ExportBillingUpdatesJobConfigUI();
-
-            _methods = new COMMethods();
         }
 
         /// <summary>
@@ -58,11 +55,10 @@ namespace Syscon.ScheduledJob.ExportBillingUpdatesJob
             {
                 using (Env.TempDBFPointer
                     _exportlist = con.GetTempDBF())
-                {
-                    var hashed_password = _methods.smartEncrypt(_jobConfig.Password, false);
+                {                    
 
                     //Login to the SMB Dir
-                    var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), hashed_password);
+                    var login_result = con.GetScalar<int>("select count(*) from usrlst where upper(usrnme) == '{0}' and usrpsw == '{1}'", _jobConfig.UserId.ToUpper(), _jobConfig.Password);
                     if (login_result == 0)
                     {
                         this.Log("Login failure - Invalid user name or password. Exiting job...");
